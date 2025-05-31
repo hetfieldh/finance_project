@@ -31,12 +31,20 @@
                     <div class="dropdown-content">
                         <a href="{{ url_for('users.list_users') }}">Usuários</a>
                         <a href="{{ url_for('crediarios.list_crediarios') }}">Crediários</a>
-                        <a href="{{ url_for('contas.list_contas') }}">Contas Bancárias</a>
-                        <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
+                        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Contas Bancárias</a> {# <--
+                            URL_FOR RENOMEADO #} <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a
+                            Pagar</a>
                     </div>
                 </li>
-                <li><a href="{{ url_for('users.logout') }}">Sair ({{ current_user.login }})</a></li> {# Mostra o login
-                do usuário logado #}
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Movimentos</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('movimento.mov_lancamento') }}">Lançamentos</a>
+                        <a href="{{ url_for('movimento.mov_resumo_contas') }}">Resumo de Contas</a>
+                        <a href="{{ url_for('movimento.mov_extrato') }}">Extrato</a>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('users.logout') }}">Sair ({{ current_user.login }})</a></li>
                 {% else %}
                 <li><a href="{{ url_for('users.login') }}">Login</a></li>
                 {% endif %}

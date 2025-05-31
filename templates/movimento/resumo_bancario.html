@@ -1,0 +1,46 @@
+{# templates/movimento/resumo_bancario.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | {{ title }}{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>Resumo de Contas Bancárias</h2>
+
+{% if contas %}
+<table>
+    <thead>
+        <tr>
+            <th>Banco</th>
+            <th>Número da Conta</th>
+            <th>Tipo</th>
+            <th>Saldo Inicial</th>
+            <th>Saldo Atual</th>
+            <th>Limite de Crédito</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for conta in contas %}
+        <tr>
+            <td>{{ conta.nome_banco }}</td>
+            <td>{{ conta.numero_conta }}</td>
+            <td>{{ conta.tipo_conta }}</td>
+            <td>R$ {{ "%.2f" % conta.saldo_inicial }}</td>
+            <td>R$ {{ "%.2f" % conta.saldo_atual }}</td>
+            <td>
+                {% if conta.limite_credito is not none %}
+                R$ {{ "%.2f" % conta.limite_credito }}
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhuma conta bancária cadastrada para este usuário.</p>
+<p>Você pode cadastrar contas em <a href="{{ url_for('contas.list_contas') }}">Cadastros > Contas Bancárias</a>.</p>
+{% endif %}
+
+{% endblock %}

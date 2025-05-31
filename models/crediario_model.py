@@ -1,4 +1,5 @@
 from database.db_manager import execute_query
+from psycopg.errors import UniqueViolation
 
 
 class Crediario:
@@ -14,20 +15,18 @@ class Crediario:
         query = """
         CREATE TABLE IF NOT EXISTS crediarios (
             id SERIAL PRIMARY KEY,
-            crediario VARCHAR(100) NOT NULL, 
+            crediario VARCHAR(100) NOT NULL,
             tipo VARCHAR(100) NOT NULL,
             final INTEGER NOT NULL,
             limite NUMERIC(10, 2) NOT NULL,
             UNIQUE(crediario, final)
         );
         """
-
         try:
-            execute_query(query)
-            print(
-                "Tabela 'crediarios' verificada/criada com unicidade em (crediario, final).")
+            execute_query(query, commit=True)
         except Exception as e:
-            print(f"Erro ao criar/verificar tabela 'crediarios': {e}")
+            print(f"ERRO CRÍTICO ao criar/verificar tabela 'crediarios': {e}")
+            raise
 
     @staticmethod
     def get_all():
@@ -53,28 +52,25 @@ class Crediario:
         query = "INSERT INTO crediarios (crediario, tipo, final, limite) VALUES (%s, %s, %s, %s) RETURNING id;"
         try:
             result = execute_query(
-                query, (crediario, tipo, final, limite), fetchone=True)
+                query, (crediario, tipo, final, limite), fetchone=True, commit=True)
             if result:
                 return Crediario(result[0], crediario, tipo, final, limite)
             return None
         except Exception as e:
-            # Captura exceções para informar o usuário sobre falha na inserção,
-            # como violação de unicidade composta.
             print(f"Erro ao adicionar crediário: {e}")
-            return None
+            raise
 
     @staticmethod
     def update(crediario_id, crediario_val, tipo, final, limite):
         """Atualiza um crediário existente."""
         query = "UPDATE crediarios SET crediario = %s, tipo = %s, final = %s, limite = %s WHERE id = %s;"
         execute_query(query, (crediario_val, tipo,
-                      final, limite, crediario_id))
-        # Retorna o crediário atualizado
+                              final, limite, crediario_id), commit=True)
         return Crediario.get_by_id(crediario_id)
 
     @staticmethod
     def delete(crediario_id):
         """Exclui um crediário pelo ID."""
         query = "DELETE FROM crediarios WHERE id = %s;"
-        execute_query(query, (crediario_id,))
-        return True  # Ou verificar se a exclusão realmente ocorreu
+        execute_query(query, (crediario_id,), commit=True)
+        return True

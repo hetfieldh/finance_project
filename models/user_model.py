@@ -1,7 +1,7 @@
 from database.db_manager import execute_query
 from psycopg.errors import UniqueViolation
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin  # Importar UserMixin
+from flask_login import UserMixin
 
 
 class User(UserMixin):  # Agora User herda de UserMixin
@@ -12,7 +12,25 @@ class User(UserMixin):  # Agora User herda de UserMixin
         self.login = login
         self.password_hash = password_hash
 
+    @staticmethod
+    def create_table():
+        query = """
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            login VARCHAR(80) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL -- Campo para o hash da senha
+        );
+        """
+        try:
+            execute_query(query, commit=True)
+        except Exception as e:
+            print(f"ERRO CRÍTICO ao criar/verificar tabela 'users': {e}")
+            raise
+
     # Métodos exigidos pelo Flask-Login
+
     def get_id(self):
         return str(self.id)  # Flask-Login exige que o ID seja uma string
 

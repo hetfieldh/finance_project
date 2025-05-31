@@ -1,4 +1,6 @@
+
 from database.db_manager import execute_query
+from psycopg.errors import UniqueViolation
 
 
 class ContasPagar:
@@ -9,7 +11,6 @@ class ContasPagar:
 
     @staticmethod
     def create_table():
-        """Cria a tabela contas_pagar se ela não existir."""
         query = """
         CREATE TABLE IF NOT EXISTS contas_pagar (
             id SERIAL PRIMARY KEY,
@@ -19,11 +20,11 @@ class ContasPagar:
         );
         """
         try:
-            execute_query(query)
-            print(
-                "Tabela 'contas_pagar' verificada/criada com unicidade em (conta, tipo).")
+            execute_query(query, commit=True)
         except Exception as e:
-            print(f"Erro ao criar/verificar tabela 'contas_pagasr': {e}")
+            print(
+                f"ERRO CRÍTICO ao criar/verificar tabela 'contas_pagar': {e}")
+            raise
 
     @staticmethod
     def get_all():
@@ -47,9 +48,11 @@ class ContasPagar:
     def add(conta, tipo):
         """Adiciona uma nova conta ao banco de dados."""
         if tipo not in ('Receita', 'Despesa'):
-            return None
+            raise ValueError(
+                "Tipo de conta inválido. Deve ser 'Receita' ou 'Despesa'.")
         query = "INSERT INTO contas_pagar (conta, tipo) VALUES (%s, %s) RETURNING id;"
-        result = execute_query(query, (conta, tipo), fetchone=True)
+        result = execute_query(query, (conta, tipo),
+                               fetchone=True, commit=True)
         if result:
             return ContasPagar(result[0], conta, tipo)
         return None
@@ -58,14 +61,15 @@ class ContasPagar:
     def update(conta_id, conta, tipo):
         """Atualiza uma conta existente."""
         if tipo not in ('Receita', 'Despesa'):
-            return None
+            raise ValueError(
+                "Tipo de conta inválido. Deve ser 'Receita' ou 'Despesa'.")
         query = "UPDATE contas_pagar SET conta = %s, tipo = %s WHERE id = %s;"
-        execute_query(query, (conta, tipo, conta_id))
+        execute_query(query, (conta, tipo, conta_id), commit=True)
         return ContasPagar.get_by_id(conta_id)
 
     @staticmethod
     def delete(conta_id):
         """Exclui uma conta pelo ID."""
         query = "DELETE FROM contas_pagar WHERE id = %s;"
-        execute_query(query, (conta_id,))
+        execute_query(query, (conta_id,), commit=True)
         return True

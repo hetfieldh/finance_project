@@ -1,0 +1,76 @@
+{# templates/movimento/extrato_bancario.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | {{ title }}{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>Extrato Bancário</h2>
+
+<form action="{{ url_for('movimento.mov_extrato') }}" method="post">
+    <label for="conta_id">Selecionar Conta:</label>
+    <select id="conta_id" name="conta_id" required>
+        <option value="">Selecione uma conta</option>
+        {% for conta in contas %}
+        <option value="{{ conta.id }}" {% if conta_selecionada and conta.id==conta_selecionada.id %}selected{% endif %}>
+            {{ conta.nome_banco }} - {{ conta.numero_conta }}
+        </option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="mes_ano">Mês/Ano:</label>
+    <select id="mes_ano" name="mes_ano" required>
+        <option value="">Selecione o Mês/Ano</option>
+        {% for mes in meses_disponiveis %}
+        <option value="{{ mes.value }}" {% if mes_extrato and ano_extrato and mes.value==ano_extrato ~ '-' ~ "%02d" %
+            mes_extrato %}selected{% endif %}>
+            {{ mes.label }}
+        </option>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit" class="button">Gerar Extrato</button>
+</form>
+
+{% if movimentos %}
+<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.numero_conta }}</h3>
+<p>Mês/Ano: {{ "%02d" % mes_extrato }}/{{ ano_extrato }}</p>
+<p><strong>Saldo Inicial do Mês:</strong> R$ {{ "%.2f" % saldo_inicial_mes }}</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movimento in movimentos %}
+        <tr class="{{ 'receita' if movimento.valor >= 0 else 'despesa' }}">
+            <td>{{ movimento.data.strftime('%d/%m/%Y') }}</td>
+            <td>{{ movimento.descricao }}</td>
+            <td>R$ {{ "%.2f" % movimento.valor|abs }}</td>
+            <td>{{ 'Receita' if movimento.valor >= 0 else 'Despesa' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p><strong>Saldo Final do Mês:</strong> R$ {{ "%.2f" % saldo_final_mes }}</p>
+{% elif request.method == 'POST' %}
+<p>Nenhum movimento encontrado para a conta e período selecionados.</p>
+{% endif %}
+
+<style>
+    /* Estilos para o extrato */
+    .receita {
+        color: green;
+    }
+
+    .despesa {
+        color: red;
+    }
+</style>
+
+{% endblock %}

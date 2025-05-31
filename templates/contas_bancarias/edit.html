@@ -2,41 +2,43 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
-{% block header_title %}Editar Conta{% endblock %}
+{% block header_title %}Editar Conta Bancária{% endblock %} {# <-- Título atualizado #} {% block content %} <form
+    action="{{ url_for('contas_bancarias.edit_conta_bancaria', conta_id=conta.id) }}" method="post"
+    onsubmit="return formatBeforeSubmit()"> {# <-- URL_FOR RENOMEADO #} <label for="nome_banco">Nome do Banco:</label>
+        <input type="text" id="nome_banco" name="nome_banco" value="{{ conta.nome_banco }}" maxlength="100"
+            required><br><br>
 
-{% block content %}
-<form action="{{ url_for('contas.edit_conta', conta_id=conta.id) }}" method="post"
-    onsubmit="return formatBeforeSubmit()">
-    <label for="nome_banco">Nome do Banco:</label>
-    <input type="text" id="nome_banco" name="nome_banco" value="{{ conta.nome_banco }}" maxlength="100"
-        required><br><br>
+        <label for="tipo_conta">Tipo:</label>
+        <select id="tipo_conta" name="tipo_conta" required>
+            <option value="">Selecione um tipo</option>
+            {% for tipo_opcao in tipos_conta %}
+            <option value="{{ tipo_opcao }}" {% if tipo_opcao==conta.tipo_conta %}selected{% endif %}>{{ tipo_opcao }}
+            </option>
+            {% endfor %}
+        </select><br><br>
 
-    <label for="tipo">Tipo:</label>
-    <select id="tipo" name="tipo" required>
-        <option value="">Selecione um tipo</option>
-        {% for tipo_opcao in tipos_conta %}
-        <option value="{{ tipo_opcao }}" {% if tipo_opcao==conta.tipo %}selected{% endif %}>{{ tipo_opcao }}
-        </option>
-        {% endfor %}
-    </select><br><br>
+        <label for="agencia">Agência (4 dígitos):</label>
+        <input type="text" id="agencia" name="agencia" value="{{ " %04d" % conta.agencia }}" pattern="[0-9]{4}"
+            title="Deve conter exatamente 4 dígitos numéricos" onblur="formatInput(this, 4)" required><br><br>
 
-    <label for="agencia">Agência (4 dígitos):</label>
-    <input type="text" id="agencia" name="agencia" value="{{ " %04d" % conta.agencia }}" pattern="[0-9]{4}"
-        title="Deve conter exatamente 4 dígitos numéricos" onblur="formatInput(this, 4)" required><br><br>
+        <label for="numero_conta">Número da Conta (apenas dígitos, até 50 caracteres):</label>
+        <input type="text" id="numero_conta" name="numero_conta" value="{{ conta.numero_conta }}" pattern="[0-9]{1,50}"
+            title="Deve conter apenas dígitos, entre 1 e 50 caracteres." onblur="formatInput(this, 50)"
+            required><br><br>
 
-    <label for="numero_conta">Número da Conta (20 dígitos):</label>
-    <input type="text" id="numero_conta" name="numero_conta" value="{{ " %020d" % conta.numero_conta }}"
-        pattern="[0-9]{1,20}" title="Deve conter entre 1 e 20 dígitos numéricos" onblur="formatInput(this, 20)"
-        required><br><br>
+        <label for="saldo_inicial">Saldo Inicial:</label>
+        <input type="number" id="saldo_inicial" name="saldo_inicial" value="{{ " %.2f" % conta.saldo_inicial }}"
+            step="0.01" required><br><br>
 
-    <label for="saldo_inicial">Saldo Inicial:</label>
-    <input type="number" id="saldo_inicial" name="saldo_inicial" value="{{ " %.2f" % conta.saldo_inicial }}" step="0.01"
-        required><br><br>
+        <label for="saldo_atual">Saldo Atual:</label>
+        <input type="number" id="saldo_atual" name="saldo_atual" value="{{ " %.2f" % conta.saldo_atual }}" step="0.01"
+            required><br><br>
 
-    <label for="limite">Limite:</label>
-    <input type="number" id="limite" name="limite" value="{{ " %.2f" % conta.limite }}" step="0.01" required><br><br>
+        <label for="limite_credito">Limite de Crédito (Opcional):</label>
+        <input type="number" id="limite_credito" name="limite_credito" value="{{ " %.2f" % conta.limite_credito if
+            conta.limite_credito is not none else '' }}" step="0.01"><br><br>
 
-    <button type="submit" class="button">Atualizar</button>
-    <a href="{{ url_for('contas.list_contas') }}" class="button cancel">Cancelar</a>
-</form>
-{% endblock %}
+        <button type="submit" class="button">Atualizar</button>
+        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}" class="button cancel">Cancelar</a> {# <--
+            URL_FOR RENOMEADO #} </form>
+            {% endblock %}
