@@ -1,0 +1,25 @@
+# Ignorar pastas de ambiente virtual
+venv/
+.venv/
+
+# Ignorar arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Ignorar arquivos de configuração de ambiente (MUito importante para segurança!)
+.env
+
+# Ignorar logs
+*.log
+
+# Ignorar arquivos de banco de dados SQLite (se estivesse usando)
+*.db
+*.sqlite3
+
+# Ignorar arquivos específicos do sistema operacional ou IDEs
+.DS_Store # macOS
+.vscode/ # VS Code
+.idea/ # PyCharm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

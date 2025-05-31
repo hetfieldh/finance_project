@@ -1,0 +1,46 @@
+{# templates/crediarios/list.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Crediários{% endblock %}
+{% block header_title %}Gerenciar Crediários{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('crediarios.add_crediario') }}" class="button">Adicionar Novo Crediário</a>
+
+{% if crediarios %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Crediário</th>
+            <th>Tipo</th>
+            <th>Final</th>
+            <th>Limite</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for crediario in crediarios %}
+        <tr>
+            <td>{{ crediario.id }}</td>
+            <td>{{ crediario.crediario }}</td>
+            <td>{{ crediario.tipo }}</td>
+            <td>{{ crediario.final }}</td>
+            <td>{{ "%.2f" % crediario.limite }}</td>
+            <td>
+                <a href="{{ url_for('crediarios.edit_crediario', crediario_id=crediario.id) }}"
+                    class="button edit">Editar</a>
+                <form action="{{ url_for('crediarios.delete_crediario', crediario_id=crediario.id) }}" method="post"
+                    style="display:inline;">
+                    <button type="submit" class="button delete"
+                        onclick="return confirm('Tem certeza que deseja excluir este crediário?');">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhum crediário cadastrado ainda.</p>
+{% endif %}
+{% endblock %}

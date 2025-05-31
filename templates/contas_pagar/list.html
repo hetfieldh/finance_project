@@ -1,0 +1,40 @@
+{# templates/contas_pagar/list.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Contas a Pagar{% endblock %}
+{% block header_title %}Gerenciar Contas a Pagar{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('contas_pagar.add_contas_pagar') }}" class="button">Adicionar Nova Conta</a>
+{% if contas_pagar %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Conta</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for conta in contas_pagar %}
+        <tr>
+            <td>{{ conta.id }}</td>
+            <td>{{ conta.conta }}</td>
+            <td>{{ conta.tipo }}</td>
+            <td>
+                <a href="{{ url_for('contas_pagar.edit_user', conta_id=conta.id) }}" class="button edit">Editar</a>
+                <form action="{{ url_for('contas_pagar.delete_conta', conta_id=conta.id) }}" method="post"
+                    style="display:inline;">
+                    <button type="submit" class="button delete"
+                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhuma conta cadastrada ainda.</p>
+{% endif %}
+{% endblock %}

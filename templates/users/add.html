@@ -1,0 +1,24 @@
+{# templates/users/add.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Usuários{% endblock %}
+{% block header_title %}Adicionar Novo Usuário{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('users.add_user') }}" method="post">
+    <label for="name">Nome:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <label for="login">Login:</label>
+    <input type="text" id="login" name="login" required><br><br>
+
+    <label for="password">Senha:</label>
+    <input type="password" id="password" name="password" required><br><br> {# NOVO CAMPO DE SENHA, obrigatório #}
+
+    <button type="submit" class="button">Adicionar</button>
+    <a href="{{ url_for('users.list_users') }}" class="button cancel">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,20 @@
+{# templates/contas_pagar/add.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Contas a Pagar{% endblock %}
+{% block header_title %}Adicionar Nova Conta{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('contas_pagar.add_contas_pagar') }}" method="post">
+    <label for="conta">Conta:</label>
+    <input type="text" id="conta" name="conta" required><br><br>
+    <label for="tipo">Tipo:</label>
+    <select id="tipo" name="tipo" required>
+        <option value="">Selecione</option>
+        <option value="Receita">Receita</option>
+        <option value="Despesa">Despesa</option>
+    </select><br><br>
+    <button type="submit" class="button">Adicionar</button>
+    <a href="{{ url_for('contas_pagar.list_contas_pagar') }}" class="button cancel">Cancelar</a>
+</form>
+{% endblock %}

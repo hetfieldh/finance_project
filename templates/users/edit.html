@@ -1,0 +1,24 @@
+{# templates/users/edit.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Usuários{% endblock %}
+{% block header_title %}Editar Usuário{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('users.edit_user', user_id=user.id) }}" method="post">
+    <label for="name">Nome:</label>
+    <input type="text" id="name" name="name" value="{{ user.name }}" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{ user.email }}" required><br><br>
+
+    <label for="login">Login:</label>
+    <input type="text" id="login" name="login" value="{{ user.login }}" required><br><br>
+
+    <label for="password">Nova Senha (deixe em branco para não alterar):</label>
+    <input type="password" id="password" name="password"><br><br> {# Não preencher com user.password_hash #}
+
+    <button type="submit" class="button">Atualizar</button>
+    <a href="{{ url_for('users.list_users') }}" class="button cancel">Cancelar</a>
+</form>
+{% endblock %}

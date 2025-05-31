@@ -1,0 +1,7 @@
+# Para instalar essas dependências em um ambiente virtual (o que é altamente recomendado), use o comando:
+# pip install -r requirements.txt
+Flask
+Flask-Login
+psycopg[binary]
+python-dotenv
+Werkzeug

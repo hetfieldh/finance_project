@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Finanças Pessoais WEB{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <a href="{{ url_for('index') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logotipo da Empresa"
+                class="header-logo">
+        </a>
+        <h1>{% block header_title %}Projeto Finanças com PostgreSQL{% endblock %}</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                {# Mostrar links de cadastro apenas se o usuário estiver logado #}
+                {% if current_user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Cadastros</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('users.list_users') }}">Usuários</a>
+                        <a href="{{ url_for('crediarios.list_crediarios') }}">Crediários</a>
+                        <a href="{{ url_for('contas.list_contas') }}">Contas Bancárias</a>
+                        <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('users.logout') }}">Sair ({{ current_user.login }})</a></li> {# Mostra o login
+                do usuário logado #}
+                {% else %}
+                <li><a href="{{ url_for('users.login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Finanças WEB</p>
+    </footer>
+    {% block scripts_extra %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

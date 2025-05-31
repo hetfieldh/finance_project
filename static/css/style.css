@@ -1,0 +1,328 @@
+/* --- 1. Estilos Globais e Reset Básico --- */
+/*
+ * Aplica estilos base ao corpo do documento,
+ * define a fonte padrão e remove margens/preenchimentos padrão do navegador.
+ */
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    line-height: 1.0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    /* Transforma o body em um container flexível */
+    flex-direction: column;
+    /* Organiza os filhos (header, main, footer) em uma coluna */
+}
+
+html,
+body {
+    height: 100%;
+    /* Garante que HTML e Body ocupem toda a altura da viewport */
+    margin: 0;
+    /* Garante que não haja margens extras */
+    padding: 0;
+    /* Garante que não haja padding extras */
+}
+
+/* --- 2. Estilos do Layout Principal (Header, Main, Footer) --- */
+
+/* Cabeçalho da página */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    position: relative;
+    /* Adicione esta linha para permitir posicionamento absoluto de filhos */
+    flex-shrink: 0;
+    /* Impede que o cabeçalho encolha */
+}
+
+header h1 {
+    margin: 0;
+}
+
+/* Conteúdo principal da página */
+main {
+    padding: 30px;
+    max-width: 95%;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+    /* Permite que o main ocupe todo o espaço disponível */
+}
+
+/* Rodapé da página */
+footer {
+    text-align: center;
+    padding: 3px 0;
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    margin-top: 5px;
+    flex-shrink: 0;
+    /* Impede que o rodapé encolha */
+}
+
+/* Estilos para o logotipo */
+.logo-link {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    height: 85px;
+    width: auto;
+    max-width: 100px;
+}
+
+/* --- 3. Estilos de Navegação (Menu Principal e Dropdown) --- */
+
+/* Lista não ordenada da navegação */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    /* Alinha os itens horizontalmente */
+    justify-content: center;
+}
+
+/* Itens da lista de navegação */
+nav ul li {
+    position: relative;
+    /* Necessário para posicionar o conteúdo do dropdown */
+    margin: 0 15px;
+}
+
+/* Links da navegação */
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    background-color: #575757;
+    border-radius: 4px;
+}
+
+/* Container do dropdown (menu suspenso) */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Conteúdo do dropdown (itens ocultos) */
+.dropdown-content {
+    display: none;
+    /* Esconde o conteúdo por padrão */
+    position: absolute;
+    background-color: #444;
+    /* Cor de fundo do dropdown */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    /* Garante que fique acima de outros elementos */
+    border-radius: 4px;
+    top: 100%;
+    /* Posiciona abaixo do item pai */
+    left: 0;
+}
+
+/* Links dentro do conteúdo do dropdown */
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #575757;
+}
+
+/* Mostra o conteúdo do dropdown ao passar o mouse sobre o item pai */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilo para o botão que aciona o dropdown (para ter padding igual aos links) */
+.dropbtn {
+    padding: 10px 15px;
+}
+
+/* --- 4. Estilos de Formulários --- */
+
+/* Estilo geral para formulários */
+form {
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    padding: 8px;
+    border-radius: 4px;
+    border: 0.5px solid #ddd;
+    margin-bottom: 20px;
+}
+
+/* Rótulos dos campos do formulário */
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* Campos de entrada de texto, email, número, senha e select */
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form input[type="password"],
+form select {
+    width: calc(100% - 22px);
+    /* Ocupa quase 100% da largura, descontando padding e borda */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* --- 5. Estilos de Botões --- */
+
+/* Estilo base para botões de submissão e links com classe 'button' */
+form button[type="submit"],
+
+.button {
+    background-color: #007bff;
+    color: white;
+    font-size: 13px;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+/* Efeito hover para botões padrão */
+form button[type="submit"]:hover,
+.button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos específicos para botões de edição */
+.button.edit {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.button.edit:hover {
+    background-color: #e0a800;
+}
+
+/* Estilos específicos para botões de exclusão */
+.button.delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.button.delete:hover {
+    background-color: #c82333;
+}
+
+/* Estilos específicos para botões de cancelamento */
+.button.cancel {
+    background-color: #6c757d;
+    color: white;
+}
+
+.button.cancel:hover {
+    background-color: #5a6268;
+}
+
+/* --- 6. Estilos de Tabela --- */
+
+/* Tabela geral */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+/* Bordas para tabela, cabeçalho e células */
+table,
+th,
+td {
+    border: 1px solid #ddd;
+}
+
+/* Preenchimento e alinhamento de células */
+th,
+td {
+    padding: 3px;
+    text-align: left;
+}
+
+/* Cor de fundo para o cabeçalho da tabela */
+th {
+    background-color: #f2f2f2;
+}
+
+/* Remove o fundo, padding, borda e sombra dos forms usados inline em tabelas */
+td form {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    display: inline;
+}
+
+/* --- 7. Estilos de Mensagens Flash (Notificações) --- */
+
+/* Lista de mensagens flash */
+.flashes {
+    list-style: none;
+    /* Remove marcadores de lista */
+    padding: 0;
+    margin: 10px 0;
+}
+
+/* Itens individuais das mensagens flash */
+.flashes li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Estilo para mensagens de sucesso */
+.flashes .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Estilo para mensagens de erro/perigo */
+.flashes .danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Estilo para mensagens de aviso/atenção */
+.flashes .warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
