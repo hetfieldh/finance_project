@@ -200,7 +200,6 @@ form select {
 
 /* Estilo base para botões de submissão e links com classe 'button' */
 form button[type="submit"],
-
 .button {
     background-color: #007bff;
     color: white;
@@ -218,26 +217,6 @@ form button[type="submit"],
 form button[type="submit"]:hover,
 .button:hover {
     background-color: #0056b3;
-}
-
-/* Estilos específicos para botões de edição */
-.button.edit {
-    background-color: #ffc107;
-    color: #333;
-}
-
-.button.edit:hover {
-    background-color: #e0a800;
-}
-
-/* Estilos específicos para botões de exclusão */
-.button.delete {
-    background-color: #dc3545;
-    color: white;
-}
-
-.button.delete:hover {
-    background-color: #c82333;
 }
 
 /* Estilos específicos para botões de cancelamento */
@@ -269,7 +248,7 @@ td {
 /* Preenchimento e alinhamento de células */
 th,
 td {
-    padding: 3px;
+    padding: 5px;
     text-align: left;
 }
 
@@ -331,11 +310,80 @@ td form {
 .positive-balance {
     color: green;
     font-weight: bold;
-    /* Opcional: para dar mais destaque */
 }
 
 .negative-balance {
     color: red;
     font-weight: bold;
-    /* Opcional: para dar mais destaque */
+}
+
+/* --- 8. Estilos para Botões de Ícone (Ações em Tabelas) --- */
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    /* Tamanho ajustado para ser mais compacto */
+    height: 20px;
+    padding: 0;
+    margin: 0 0px;
+    /* Margem ajustada para ficarem mais próximos */
+    border: none !important;
+    background-color: transparent !important;
+    cursor: pointer;
+    border-radius: 0px;
+    /* Borda reta */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    color: #555;
+    /* Cor padrão cinza para os ícones */
+    -webkit-appearance: none;
+    /* Reseta a aparência padrão do navegador para botões */
+    -moz-appearance: none;
+    appearance: none;
+    outline: none !important;
+    /* Remove a borda de foco */
+}
+
+/* Estilo para o ícone de Editar */
+.icon-button.edit {
+    color: #052241;
+    /* Cor azul escuro para o ícone de editar */
+    font-size: 1.3em;
+    /* Tamanho da fonte do ícone */
+}
+
+/* Estilo para o ícone de Excluir */
+.icon-button.delete {
+    color: #530e15;
+    /* Cor vermelha escura para o ícone de excluir */
+    font-size: 1.3em;
+    /* Tamanho da fonte do ícone */
+}
+
+/* Efeitos ao passar o mouse (hover) nos botões de ícone */
+.icon-button:hover {
+    background-color: #f0f0f000;
+    /* Fundo transparente no hover */
+    color: #333;
+    /* Cor mais escura no hover */
+}
+
+.icon-button.edit:hover {
+    color: #0952f0;
+    /* Azul mais vibrante no hover do editar */
+}
+
+.icon-button.delete:hover {
+    color: #f8061e;
+    /* Vermelho mais vibrante no hover do excluir */
+}
+
+/* Estilos para a coluna de ações da tabela (onde os ícones estão) */
+table td:last-child {
+    text-align: left;
+    /* Alinhamento à esquerda */
+    white-space: nowrap;
+    /* Impede que os botões quebrem a linha */
 }

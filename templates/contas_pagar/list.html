@@ -22,11 +22,19 @@
             <td>{{ conta.conta }}</td>
             <td>{{ conta.tipo }}</td>
             <td>
-                <a href="{{ url_for('contas_pagar.edit_user', conta_id=conta.id) }}" class="button edit">Editar</a>
+                {# Botão de EDITAR #}
+                <a href="{{ url_for('contas_pagar.edit_user', conta_id=conta.id) }}" class="icon-button edit"
+                    title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                {# Botão de EXCLUIR #}
                 <form action="{{ url_for('contas_pagar.delete_conta', conta_id=conta.id) }}" method="post"
                     style="display:inline;">
-                    <button type="submit" class="button delete"
-                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">Excluir</button>
+                    <button type="submit" class="icon-button delete" title="Excluir"
+                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
                 </form>
             </td>
         </tr>

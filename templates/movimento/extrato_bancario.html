@@ -12,7 +12,7 @@
         <option value="">Selecione uma conta</option>
         {% for conta in contas %}
         <option value="{{ conta.id }}" {% if conta_selecionada and conta.id==conta_selecionada.id %}selected{% endif %}>
-            {{ conta.nome_banco }} - {{ conta.numero_conta }}
+            {{ conta.nome_banco }} - {{ conta.tipo_conta }} ({{ conta.agencia }} / {{ conta.numero_conta }})
         </option>
         {% endfor %}
     </select><br><br>
@@ -32,7 +32,7 @@
 </form>
 
 {% if movimentos %}
-<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.numero_conta }}</h3>
+<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.tipo_conta }} ({{ conta_selecionada.agencia }} / {{ conta_selecionada.numero_conta }})</h3>
 <p>Mês/Ano: {{ "%02d" % mes_extrato }}/{{ ano_extrato }}</p>
 <p><strong>Saldo Inicial do Mês:</strong> R$ {{ "%.2f" % saldo_inicial_mes }}</p>
 

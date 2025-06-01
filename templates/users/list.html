@@ -26,11 +26,18 @@
             <td>{{ user.email }}</td>
             <td>{{ user.login }}</td>
             <td>
-                <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="button edit">Editar</a>
+                {# Botão de EDITAR #}
+                <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="icon-button edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                {# Botão de EXCLUIR #}
                 <form action="{{ url_for('users.delete_user', user_id=user.id) }}" method="post"
                     style="display:inline;">
-                    <button type="submit" class="button delete"
-                        onclick="return confirm('Tem certeza que deseja excluir este usuário?');">Excluir</button>
+                    <button type="submit" class="icon-button delete" title="Excluir"
+                        onclick="return confirm('Tem certeza que deseja excluir este usuário?');">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
                 </form>
             </td>
         </tr>

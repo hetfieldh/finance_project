@@ -4,8 +4,10 @@
 {% block header_title %}Gerenciar Contas Bancárias{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar Nova Conta Bancária</a>{% if
-contas %} <table>
+<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar Nova Conta Bancária</a>
+
+{% if contas %}
+<table>
     <thead>
         <tr>
             <th>ID</th>
@@ -28,20 +30,36 @@ contas %} <table>
             <td>{{ "%04d" % conta.agencia }}</td>
             <td>{{ conta.numero_conta }}</td>
             <td>{{ "%.2f" % conta.saldo_inicial }}</td>
-            <td>{{ "%.2f" % conta.saldo_atual }}</td>
+            <td class="
+                {% if conta.saldo_atual > 0 %}
+                    positive-balance
+                {% elif conta.saldo_atual < 0 %}
+                    negative-balance
+                {% endif %}
+            ">
+                R$ {{ "%.2f" % conta.saldo_atual }}
+            </td>
             <td>
                 {% if conta.limite_credito is not none %}
-                {{ "%.2f" % conta.limite_credito }}
+                R$ {{ "%.2f" % conta.limite_credito }}
                 {% else %}
                 N/A
                 {% endif %}
             </td>
             <td>
+                {# Botão de EDITAR #}
                 <a href="{{ url_for('contas_bancarias.edit_conta_bancaria', conta_id=conta.id) }}"
-                    class="button edit">Editar</a>
+                    class="icon-button edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                {# Botão de EXCLUIR #}
                 <form action="{{ url_for('contas_bancarias.delete_conta_bancaria', conta_id=conta.id) }}" method="post"
-                    style="display:inline;"> <button type="submit" class="button delete"
-                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">Excluir</button>
+                    style="display:inline;">
+                    <button type="submit" class="icon-button delete" title="Excluir"
+                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
                 </form>
             </td>
         </tr>
