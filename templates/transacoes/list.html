@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Finanças | Transações{% endblock %}
+{% block header_title %}Gerenciar Tipos de Transação{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('transacoes.add_transacao') }}" class="button">Adicionar Nova Transação</a>
+
+{% if transacoes %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Transação</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transacao in transacoes %}
+        <tr>
+            <td>{{ transacao.id }}</td>
+            <td>{{ transacao.transacao }}</td>
+            <td>{{ transacao.tipo }}</td>
+            <td>
+                <a href="{{ url_for('transacoes.edit_transacao', transacao_id=transacao.id) }}"
+                    class="button edit">Editar</a>
+                <form action="{{ url_for('transacoes.delete_transacao', transacao_id=transacao.id) }}" method="post"
+                    style="display:inline;">
+                    <button type="submit" class="button delete"
+                        onclick="return confirm('Tem certeza que deseja excluir esta transação?');">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhum tipo de transação cadastrado ainda.</p>
+{% endif %}
+{% endblock %}

@@ -1,4 +1,3 @@
-{# templates/contas_bancarias/edit.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
@@ -39,6 +38,5 @@
             conta.limite_credito is not none else '' }}" step="0.01"><br><br>
 
         <button type="submit" class="button">Atualizar</button>
-        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}" class="button cancel">Cancelar</a> {# <--
-            URL_FOR RENOMEADO #} </form>
-            {% endblock %}
+        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}" class="button cancel">Cancelar</a></form>
+        {% endblock %}

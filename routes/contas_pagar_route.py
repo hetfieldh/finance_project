@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.contas_pagar_model import ContasPagar
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 contas_pagar_bp = Blueprint(
     'contas_pagar', __name__, url_prefix='/contas_pagar')

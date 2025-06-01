@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.user_model import User
-from psycopg.errors import UniqueViolation
 from flask_login import login_user, logout_user, login_required, current_user
 
 user_bp = Blueprint('users', __name__, url_prefix='/users')

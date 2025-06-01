@@ -1,5 +1,4 @@
-from database.db_manager import execute_query, get_db_cursor
-from psycopg.errors import UniqueViolation
+from database.db_manager import execute_query
 
 
 class ContaBancaria:

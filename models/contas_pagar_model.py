@@ -1,6 +1,5 @@
 
 from database.db_manager import execute_query
-from psycopg.errors import UniqueViolation
 
 
 class ContasPagar:

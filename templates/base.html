@@ -24,18 +24,21 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                {# Mostrar links de cadastro apenas se o usuário estiver logado #}
                 {% if current_user.is_authenticated %}
+
+                {# CADASTROS #}
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">Cadastros</a>
                     <div class="dropdown-content">
                         <a href="{{ url_for('users.list_users') }}">Usuários</a>
                         <a href="{{ url_for('crediarios.list_crediarios') }}">Crediários</a>
-                        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Contas Bancárias</a> {# <--
-                            URL_FOR RENOMEADO #} <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a
-                            Pagar</a>
+                        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Contas Bancárias</a>
+                        <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
+                        <a href="{{ url_for('transacoes.list_transacoes')}}">Transações</a>
                     </div>
                 </li>
+
+                {# MOVIMENTOS #}
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">Movimentos</a>
                     <div class="dropdown-content">

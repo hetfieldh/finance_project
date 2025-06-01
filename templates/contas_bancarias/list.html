@@ -1,12 +1,11 @@
-{# templates/contas_bancarias/list.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
 {% block header_title %}Gerenciar Contas Bancárias{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar Nova Conta Bancária</a> {# <--
-    URL_FOR RENOMEADO #} {% if contas %} <table>
+<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar Nova Conta Bancária</a>{% if
+contas %} <table>
     <thead>
         <tr>
             <th>ID</th>
@@ -39,17 +38,17 @@
             </td>
             <td>
                 <a href="{{ url_for('contas_bancarias.edit_conta_bancaria', conta_id=conta.id) }}"
-                    class="button edit">Editar</a> {# <-- URL_FOR RENOMEADO #} <form
-                    action="{{ url_for('contas_bancarias.delete_conta_bancaria', conta_id=conta.id) }}" method="post"
-                    style="display:inline;"> {# <-- URL_FOR RENOMEADO #} <button type="submit" class="button delete"
+                    class="button edit">Editar</a>
+                <form action="{{ url_for('contas_bancarias.delete_conta_bancaria', conta_id=conta.id) }}" method="post"
+                    style="display:inline;"> <button type="submit" class="button delete"
                         onclick="return confirm('Tem certeza que deseja excluir esta conta?');">Excluir</button>
-                        </form>
+                </form>
             </td>
         </tr>
         {% endfor %}
     </tbody>
-    </table>
-    {% else %}
-    <p>Nenhuma conta bancária cadastrada ainda.</p>
-    {% endif %}
-    {% endblock %}
+</table>
+{% else %}
+<p>Nenhuma conta bancária cadastrada ainda.</p>
+{% endif %}
+{% endblock %}

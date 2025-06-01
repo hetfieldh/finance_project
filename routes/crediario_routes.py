@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.crediario_model import Crediario
-from psycopg.errors import UniqueViolation  # Importa a exceção específica
-from flask_login import login_required, current_user
+from psycopg.errors import UniqueViolation
+from flask_login import login_required
 
 crediario_bp = Blueprint('crediarios', __name__, url_prefix='/crediarios')
 

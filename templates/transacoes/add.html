@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Finanças | Transações{% endblock %}
+{% block header_title %}Adicionar Novo Tipo de Transação{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('transacoes.add_transacao') }}" method="post">
+    <label for="transacao">Nome da Transação:</label>
+    <input type="text" id="transacao" name="transacao" maxlength="100" required><br><br>
+
+    <label for="tipo">Tipo:</label>
+    <select id="tipo" name="tipo" required>
+        <option value="">Selecione o Tipo</option>
+        {% for tipo_opcao in tipos_transacao %}
+        <option value="{{ tipo_opcao }}">{{ tipo_opcao }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit" class="button">Adicionar</button>
+    <a href="{{ url_for('transacoes.list_transacoes') }}" class="button cancel">Cancelar</a>
+</form>
+{% endblock %}
