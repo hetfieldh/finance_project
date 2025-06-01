@@ -25,7 +25,16 @@
             <td>{{ conta.numero_conta }}</td>
             <td>{{ conta.tipo_conta }}</td>
             <td>R$ {{ "%.2f" % conta.saldo_inicial }}</td>
-            <td>R$ {{ "%.2f" % conta.saldo_atual }}</td>
+
+            <td class="
+                    {% if conta.saldo_atual > 0 %}
+                        positive-balance
+                    {% elif conta.saldo_atual < 0 %}
+                        negative-balance
+                    {% endif %}
+                ">
+                R$ {{ "%.2f" % conta.saldo_atual }}
+            </td>
             <td>
                 {% if conta.limite_credito is not none %}
                 R$ {{ "%.2f" % conta.limite_credito }}
@@ -39,8 +48,8 @@
 </table>
 {% else %}
 <p>Nenhuma conta bancária cadastrada para este usuário.</p>
-<p>Você pode cadastrar contas em <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Cadastros > Contas Bancárias</a>.</p> 
-        
-{% endif %} 
+<p>Você pode cadastrar contas em <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Cadastros > Contas
+        Bancárias</a>.</p>
+{% endif %}
 
 {% endblock %}

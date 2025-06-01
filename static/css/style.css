@@ -326,3 +326,16 @@ td form {
     color: #856404;
     border: 1px solid #ffeeba;
 }
+
+/* Estilos para saldos na tela de Resumo de Contas */
+.positive-balance {
+    color: green;
+    font-weight: bold;
+    /* Opcional: para dar mais destaque */
+}
+
+.negative-balance {
+    color: red;
+    font-weight: bold;
+    /* Opcional: para dar mais destaque */
+}
