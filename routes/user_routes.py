@@ -1,117 +1,165 @@
+# routes/user_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.user_model import User
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_required, current_user, login_user, logout_user
+from functools import wraps
 
-user_bp = Blueprint('users', __name__, url_prefix='/users')
+user_bp = Blueprint('users', __name__)
 
-# Nova Rota para Login
-
-
-@user_bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:  # Se o usuário já estiver logado, redireciona para a home
-        return redirect(url_for('index'))
-
-    if request.method == 'POST':
-        login = request.form['login']
-        password = request.form['password']
-
-        user = User.get_by_login(login)  # Busca o usuário pelo login
-        if user and user.check_password(password):  # Verifica a senha
-            login_user(user)  # Faz o login do usuário
-            flash('Login bem-sucedido!', 'success')
-            # Redireciona para a página de onde o usuário veio (se houver) ou para a home
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('index'))
-        else:
-            flash('Login ou senha incorretos.', 'danger')
-
-    return render_template('login.html')
-
-# Nova Rota para Logout
+# --- Decorador para Rotas Apenas de Administrador ---
 
 
-@user_bp.route('/logout')
-@login_required  # Garante que apenas usuários logados podem acessar esta rota
-def logout():
-    logout_user()  # Faz o logout do usuário
-    flash('Você foi desconectado.', 'success')
-    # Redireciona para a página de login
-    return redirect(url_for('users.login'))
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash(
+                'Acesso negado. Você não tem permissão de administrador para esta ação.', 'danger')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
-# Proteger as rotas de gerenciamento de usuários
+# --- Rotas de Usuário ---
 
 
-@user_bp.route('/')
-@login_required  # Apenas usuários logados podem ver a lista de usuários
+@user_bp.route('/list')
+@login_required
 def list_users():
-    users = User.get_all()
+    # Se o usuário logado for administrador, mostra todos os usuários
+    if current_user.is_admin:
+        users = User.get_all()
+    else:
+        # Se não for administrador, mostra apenas o próprio usuário em uma lista
+        users = [User.get_by_id(current_user.id)]
     return render_template('users/list.html', users=users)
 
 
 @user_bp.route('/add', methods=['GET', 'POST'])
-@login_required  # Apenas usuários logados podem adicionar usuários
+@login_required
+@admin_required  # Apenas administradores podem adicionar usuários
 def add_user():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
         login = request.form['login']
         password = request.form['password']
+        name = request.form['name']
+        email = request.form['email']
+        is_admin = 'is_admin' in request.form
 
-        if not (name and email and login and password):
-            flash('Todos os campos são obrigatórios!', 'warning')
-        else:
-            try:
-                new_user = User.add(name, email, login, password)
-                if new_user:
-                    flash('Usuário adicionado com sucesso!', 'success')
-                    return redirect(url_for('users.list_users'))
-            except ValueError as e:
-                flash(str(e), 'danger')  # Captura a mensagem de erro do modelo
-            except Exception as e:
-                print(f"Erro inesperado ao adicionar usuário: {e}")
-                flash('Ocorreu um erro inesperado ao adicionar o usuário.', 'danger')
-    return render_template('users/add.html')
+        if not (login and password and name and email):
+            flash('Todos os campos obrigatórios devem ser preenchido!', 'warning')
+            return render_template('users/add_user.html')
+
+        try:
+            new_user = User.add(name, email, login, password, is_admin)
+            if new_user:
+                flash(f'Usuário "{login}" adicionado com sucesso!', 'success')
+                return redirect(url_for('users.list_users'))
+            else:
+                flash(
+                    'Não foi possível adicionar o usuário. Verifique os logs do servidor.', 'danger')
+        except Exception as e:
+            flash(f'Erro ao adicionar usuário: {e}', 'danger')
+
+    return render_template('users/add_user.html')
 
 
 @user_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
-@login_required  # Apenas usuários logados podem editar usuários
+@login_required
 def edit_user(user_id):
     user = User.get_by_id(user_id)
     if not user:
         flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('users.list_users'))
 
+    # Controle de acesso para edição:
+    # Admin pode editar qualquer um. Usuário comum só pode editar a si mesmo.
+    if not current_user.is_admin and user.id != current_user.id:
+        flash('Acesso negado. Você não tem permissão para editar este usuário.', 'danger')
+        return redirect(url_for('users.list_users'))
+
     if request.method == 'POST':
+        login = request.form['login']
+        password = request.form.get('password')
         name = request.form['name']
         email = request.form['email']
-        login = request.form['login']
-        # Use .get() para campos opcionais
-        new_password = request.form.get('password')
+        # Lógica para definir is_admin:
+        # Se o usuário logado for admin, ele pode alterar o is_admin do formulário.
+        # Caso contrário, o is_admin do usuário editado permanece inalterado.
+        is_admin = 'is_admin' in request.form if current_user.is_admin else user.is_admin
 
-        if not (name and email and login):
-            flash('Nome, Email e Login são obrigatórios!', 'warning')
-        else:
-            try:
-                # Passa a nova senha (pode ser None) para o método update
-                updated_user = User.update(
-                    user_id, name, email, login, new_password)
-                if updated_user:
-                    flash('Usuário atualizado com sucesso!', 'success')
-                    return redirect(url_for('users.list_users'))
-            except ValueError as e:
-                flash(str(e), 'danger')
-            except Exception as e:
-                print(f"Erro inesperado ao atualizar usuário: {e}")
-                flash('Ocorreu um erro inesperado ao atualizar o usuário.', 'danger')
+        if not (login and name and email):
+            flash(
+                'Todos os campos obrigatórios (Login, Nome, Email) devem ser preenchidos!', 'warning')
+            return render_template('users/edit.html', user=user)
+
+        try:
+            updated_user = User.update(
+                user_id, name, email, login, password, is_admin)
+            if updated_user:
+                flash(f'Usuário "{login}" atualizado com sucesso!', 'success')
+                return redirect(url_for('users.list_users'))
+            else:
+                flash(
+                    'Não foi possível atualizar o usuário. Verifique os logs do servidor.', 'danger')
+        except Exception as e:
+            flash(f'Erro ao atualizar usuário: {e}', 'danger')
+
     return render_template('users/edit.html', user=user)
 
 
 @user_bp.route('/delete/<int:user_id>', methods=['POST'])
-@login_required  # Apenas usuários logados podem excluir usuários
+@login_required
 def delete_user(user_id):
-    if User.delete(user_id):
-        flash('Usuário excluído com sucesso!', 'success')
-    else:
-        flash('Erro ao excluir usuário.', 'danger')
+    # **VERIFICAÇÃO DE SEGURANÇA: Impedir que o usuário logado se exclua**
+    if user_id == current_user.id:
+        flash('Você não pode excluir seu próprio usuário.', 'danger')
+        return redirect(url_for('users.list_users'))
+
+    user_to_delete = User.get_by_id(user_id)
+    if not user_to_delete:
+        flash('Usuário não encontrado.', 'danger')
+        return redirect(url_for('users.list_users'))
+
+    # **VERIFICAÇÃO DE SEGURANÇA: Apenas administradores podem excluir outros usuários**
+    if not current_user.is_admin:
+        flash('Acesso negado. Você não tem permissão para excluir usuários.', 'danger')
+        return redirect(url_for('users.list_users'))
+
+    try:
+        if User.delete(user_id):
+            flash(
+                f'Usuário "{user_to_delete.login}" excluído com sucesso!', 'success')
+        else:
+            flash('Erro ao excluir usuário.', 'danger')
+    except Exception as e:
+        flash(
+            f'Ocorreu um erro inesperado ao excluir o usuário: {e}', 'danger')
+
     return redirect(url_for('users.list_users'))
+
+
+@user_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
+        user = User.get_by_login(login)
+
+        if user and user.check_password(password):
+            login_user(user)
+            flash('Login bem-sucedido!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Login ou senha inválidos.', 'danger')
+    return render_template('login.html')
+
+
+@user_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Você foi desconectado.', 'info')
+    return redirect(url_for('users.login'))

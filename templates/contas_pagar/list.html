@@ -1,38 +1,40 @@
+{# templates/contas_pagar/list.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas a Pagar{% endblock %}
 {% block header_title %}Gerenciar Contas a Pagar{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('contas_pagar.add_contas_pagar') }}" class="button">Adicionar Nova Conta</a>
+<a href="{{ url_for('contas_pagar.add_contas_pagar') }}" class="button">Adicionar Nova Conta a Pagar</a>
+
 {% if contas_pagar %}
 <table>
     <thead>
         <tr>
             <th>ID</th>
             <th>Conta</th>
-            <th>Tipo</th>
+            <th>Tipo</th> {# Mantido, pois existe no modelo #}
             <th>Ações</th>
         </tr>
     </thead>
     <tbody>
-        {% for conta in contas_pagar %}
+        {% for conta_pagar in contas_pagar %}
         <tr>
-            <td>{{ conta.id }}</td>
-            <td>{{ conta.conta }}</td>
-            <td>{{ conta.tipo }}</td>
+            <td>{{ conta_pagar.id }}</td>
+            <td>{{ conta_pagar.conta }}</td>
+            <td>{{ conta_pagar.tipo }}</td> {# Mantido, pois existe no modelo #}
             <td>
-                {# Botão de EDITAR #}
-                <a href="{{ url_for('contas_pagar.edit_user', conta_id=conta.id) }}" class="icon-button edit"
-                    title="Editar">
+                {# Botão de EDITAR - CORRIGIDO o endpoint #}
+                <a href="{{ url_for('contas_pagar.edit_conta_pagar', conta_id=conta_pagar.id) }}"
+                    class="icon-button edit" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
 
-                {# Botão de EXCLUIR #}
-                <form action="{{ url_for('contas_pagar.delete_conta', conta_id=conta.id) }}" method="post"
+                {# Botão de EXCLUIR - CORRIGIDO o endpoint #}
+                <form action="{{ url_for('contas_pagar.delete_conta_pagar', conta_id=conta_pagar.id) }}" method="post"
                     style="display:inline;">
                     <button type="submit" class="icon-button delete" title="Excluir"
-                        onclick="return confirm('Tem certeza que deseja excluir esta conta?');">
+                        onclick="return confirm('Tem certeza que deseja excluir esta conta a pagar?');">
                         <i class="fas fa-times-circle"></i>
                     </button>
                 </form>
@@ -42,6 +44,6 @@
     </tbody>
 </table>
 {% else %}
-<p>Nenhuma conta cadastrada ainda.</p>
+<p>Nenhuma conta a pagar cadastrada ainda.</p>
 {% endif %}
 {% endblock %}
