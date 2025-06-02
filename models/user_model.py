@@ -4,13 +4,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 
-class User(UserMixin):  # Agora User herda de UserMixin
-    def __init__(self, id, name, email, login, password_hash=None):
+class User(UserMixin):
+    def __init__(self, id, name, email, login, password_hash=None, is_admin=False):
         self.id = id
         self.name = name
         self.email = email
         self.login = login
         self.password_hash = password_hash
+        self.is_admin = is_admin
 
     @staticmethod
     def create_table():
@@ -20,7 +21,8 @@ class User(UserMixin):  # Agora User herda de UserMixin
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL,
             login VARCHAR(80) UNIQUE NOT NULL,
-            password_hash VARCHAR(255) NOT NULL -- Campo para o hash da senha
+            password_hash VARCHAR(255) NOT NULL,
+            is_admin BOOLEAN DEFAULT FALSE 
         );
         """
         try:
@@ -39,45 +41,48 @@ class User(UserMixin):  # Agora User herda de UserMixin
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        if self.password_hash is None:
+            return False
         return check_password_hash(self.password_hash, password)
 
     @classmethod
     def get_all(cls):
         rows = execute_query(
-            "SELECT id, name, email, login, password_hash FROM users ORDER BY name", fetchall=True)
+            "SELECT id, name, email, login, password_hash, is_admin FROM users ORDER BY name", fetchall=True)
         return [cls(*row) for row in rows] if rows else []
 
     @classmethod
     def get_by_id(cls, user_id):
         row = execute_query(
-            "SELECT id, name, email, login, password_hash FROM users WHERE id = %s", (user_id,), fetchone=True)
+            "SELECT id, name, email, login, password_hash, is_admin FROM users WHERE id = %s", (user_id,), fetchone=True)
         return cls(*row) if row else None
 
     @classmethod
     def get_by_login(cls, login):
         row = execute_query(
-            "SELECT id, name, email, login, password_hash FROM users WHERE login = %s", (login,), fetchone=True)
+            "SELECT id, name, email, login, password_hash, is_admin FROM users WHERE login = %s", (login,), fetchone=True)
         return cls(*row) if row else None
 
     @classmethod
-    def add(cls, name, email, login, password):
+    def add(cls, name, email, login, password, is_admin=False):
         password_hash = generate_password_hash(password)
         try:
             result = execute_query(
-                "INSERT INTO users (name, email, login, password_hash) VALUES (%s, %s, %s, %s) RETURNING id",
-                (name, email, login, password_hash),
+                "INSERT INTO users (name, email, login, password_hash, is_admin) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+                (name, email, login, password_hash, is_admin),
                 fetchone=True,
                 commit=True
             )
             if result:
-                return cls(result[0], name, email, login, password_hash)
+
+                return cls(result[0], name, email, login, password_hash, is_admin)
             return None
         except UniqueViolation as e:
             raise ValueError(
                 "Erro: Já existe um usuário com este login ou email.") from e
 
     @classmethod
-    def update(cls, user_id, name, email, login, new_password=None):
+    def update(cls, user_id, name, email, login, new_password=None, is_admin=None):
         user = cls.get_by_id(user_id)
         if not user:
             return None
@@ -86,11 +91,14 @@ class User(UserMixin):  # Agora User herda de UserMixin
         if new_password:
             password_hash_to_save = generate_password_hash(new_password)
 
+        is_admin_to_save = user.is_admin if is_admin is None else is_admin
+
         try:
-            query = "UPDATE users SET name = %s, email = %s, login = %s, password_hash = %s WHERE id = %s"
-            params = (name, email, login, password_hash_to_save, user_id)
+            query = "UPDATE users SET name = %s, email = %s, login = %s, password_hash = %s, is_admin = %s WHERE id = %s"
+            params = (name, email, login, password_hash_to_save,
+                      is_admin_to_save, user_id)
             if execute_query(query, params, commit=True):
-                return cls(user_id, name, email, login, password_hash_to_save)
+                return cls(user_id, name, email, login, password_hash_to_save, is_admin_to_save)
             return None
         except UniqueViolation as e:
             raise ValueError(

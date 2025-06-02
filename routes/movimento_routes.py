@@ -1,11 +1,14 @@
+# routes/movimento_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime
+import calendar
 
 # Importe os modelos necessários
 from models.conta_bancaria_model import ContaBancaria
 from models.movimento_bancario_model import MovimentoBancario
-from models.transacao_model import Transacao
+from models.transacao_model import Transacao  # Importa o modelo Transacao
+
 
 movimento_bp = Blueprint('movimento', __name__, url_prefix='/movimento')
 
@@ -20,7 +23,8 @@ def index():
 @login_required
 def mov_lancamento():
     contas = ContaBancaria.get_all_for_user(current_user.id)
-    transacoes = Transacao.get_all()
+    # ATUALIZADO: Chamar get_all_for_user para Transacao, passando o user_id
+    transacoes = Transacao.get_all_for_user(current_user.id)
 
     # CONVERTER OBJETOS ContaBancaria PARA DICIONÁRIOS JSON-SERIALIZÁVEIS
     contas_json_serializable = []
@@ -75,10 +79,7 @@ def mov_lancamento():
         except Exception as e:
             flash(f'Ocorreu um erro inesperado: {e}', 'danger')
 
-    # Passar a lista de dicionários (JSON-serializável) para o template
     return render_template('movimento/lancamento.html', title='Novo Lançamento Bancário', contas=contas_json_serializable, transacoes=transacoes)
-
-# --- Rota para Resumo de Contas ---
 
 
 @movimento_bp.route('/resumo_contas')
@@ -86,8 +87,6 @@ def mov_lancamento():
 def mov_resumo_contas():
     contas = ContaBancaria.get_all_for_user(current_user.id)
     return render_template('movimento/resumo_bancario.html', title='Resumo Bancário', contas=contas)
-
-# --- Rota para Extrato Bancário ---
 
 
 @movimento_bp.route('/extrato', methods=['GET', 'POST'])
