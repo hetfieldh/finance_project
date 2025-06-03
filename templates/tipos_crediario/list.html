@@ -1,0 +1,46 @@
+{# templates/tipos_crediario/list.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Tipos de Crediário{% endblock %}
+{% block header_title %}Gerenciar Tipos de Crediário{% endblock %}
+
+{% block content %}
+<h2>Tipos de Crediário Cadastrados</h2>
+
+<p><a href="{{ url_for('tipos_crediario.add_tipo_crediario') }}" class="button">Adicionar Novo Tipo de Crediário</a></p>
+
+{% if tipos %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome do Tipo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo in tipos %}
+        <tr>
+            <td>{{ tipo.id }}</td>
+            <td>{{ tipo.nome_tipo }}</td>
+            <td>
+                <a href="{{ url_for('tipos_crediario.edit_tipo_crediario', tipo_id=tipo.id) }}" class="icon-button edit"
+                    title="Editar">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ url_for('tipos_crediario.delete_tipo_crediario', tipo_id=tipo.id) }}" method="post"
+                    style="display:inline;">
+                    <button type="submit" class="icon-button delete" title="Excluir"
+                        onclick="return confirm('Tem certeza que deseja excluir o tipo de crediário {{ tipo.nome_tipo }}?');">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Nenhum tipo de crediário cadastrado ainda.</p>
+{% endif %}
+{% endblock %}

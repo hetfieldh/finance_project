@@ -1,4 +1,3 @@
-# routes/user_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.user_model import User
 from flask_login import login_required, current_user, login_user, logout_user
@@ -47,7 +46,7 @@ def add_user():
 
         if not (login and password and name and email):
             flash('Todos os campos obrigatórios devem ser preenchido!', 'warning')
-            return render_template('users/add_user.html')
+            return render_template('users/add.html')
 
         try:
             new_user = User.add(name, email, login, password, is_admin)
@@ -60,7 +59,8 @@ def add_user():
         except Exception as e:
             flash(f'Erro ao adicionar usuário: {e}', 'danger')
 
-    return render_template('users/add_user.html')
+    # CORRIGIDO: Alterado 'users/add_user.html' para 'users/add.html'
+    return render_template('users/add.html')
 
 
 @user_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])

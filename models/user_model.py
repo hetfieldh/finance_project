@@ -34,7 +34,7 @@ class User(UserMixin):
     # Métodos exigidos pelo Flask-Login
 
     def get_id(self):
-        return str(self.id)  # Flask-Login exige que o ID seja uma string
+        return str(self.id)
 
     # Métodos para hash e verificação de senha
     def set_password(self, password):

@@ -66,13 +66,13 @@ def execute_query(query, params=None, fetchone=False, fetchall=False, commit=Fal
 
 def check_and_update_table_constraints():
     """
-    Verifica e atualiza as constraints das tabelas, incluindo a coluna password_hash para 'users'
-    e 'saldo_atual', 'limite_credito' para 'contas_bancarias'.
+    Verifica e atualiza as constraints das tabelas, incluindo colunas faltantes.
     Imprime mensagens APENAS se uma alteração for feita ou um erro ocorrer.
     """
     try:
         with get_db_cursor(commit=True) as cursor:
             # --- users table ---
+            # Verifica e adiciona a coluna 'password_hash' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'password_hash';
@@ -83,7 +83,30 @@ def check_and_update_table_constraints():
                     "ALTER TABLE users ADD COLUMN password_hash VARCHAR(255);")
                 print("Coluna 'password_hash' adicionada à tabela 'users'.")
 
+            # Verifica e adiciona a coluna 'is_active' se necessário
+            cursor.execute("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'is_active';
+            """)
+            if not cursor.fetchone():
+                print("Adicionando coluna 'is_active' à tabela 'users'...")
+                cursor.execute(
+                    "ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE;")
+                print("Coluna 'is_active' adicionada à tabela 'users'.")
+
+            # Verifica e adiciona a coluna 'is_admin' se necessário
+            cursor.execute("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'is_admin';
+            """)
+            if not cursor.fetchone():
+                print("Adicionando coluna 'is_admin' à tabela 'users'...")
+                cursor.execute(
+                    "ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;")
+                print("Coluna 'is_admin' adicionada à tabela 'users'.")
+
             # --- contas_bancarias table ---
+            # Verifica e adiciona a coluna 'saldo_atual' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'contas_bancarias' AND column_name = 'saldo_atual';
@@ -91,9 +114,10 @@ def check_and_update_table_constraints():
             if not cursor.fetchone():
                 print("Adicionando coluna 'saldo_atual' à tabela 'contas_bancarias'...")
                 cursor.execute(
-                    "ALTER TABLE contas_bancarias ADD COLUMN saldo_atual NUMERIC(15, 2) NOT NULL DEFAULT 0.0;")
+                    "ALTER TABLE contas_bancarias ADD COLUMN NUMERIC(15, 2) NOT NULL DEFAULT 0.0;")
                 print("Coluna 'saldo_atual' adicionada à tabela 'contas_bancarias'.")
 
+            # Verifica e adiciona a coluna 'limite_credito' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'contas_bancarias' AND column_name = 'limite_credito';
@@ -104,6 +128,43 @@ def check_and_update_table_constraints():
                 cursor.execute(
                     "ALTER TABLE contas_bancarias ADD COLUMN limite_credito NUMERIC(15, 2) NULL;")
                 print("Coluna 'limite_credito' adicionada à tabela 'contas_bancarias'.")
+
+            # --- tipos_crediario table ---
+            # Verifica e adiciona a coluna 'user_id' e a constraint UNIQUE se necessário
+            # Primeiro, verifica se a tabela 'tipos_crediario' existe para evitar UndefinedTable
+            cursor.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'tipos_crediario'
+                );
+            """)
+            if cursor.fetchone()[0]:
+                cursor.execute("""
+                    SELECT column_name FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = 'tipos_crediario' AND column_name = 'user_id';
+                """)
+                if not cursor.fetchone():
+                    print("Adicionando coluna 'user_id' à tabela 'tipos_crediario'...")
+                    cursor.execute(
+                        "ALTER TABLE tipos_crediario ADD COLUMN user_id INTEGER;")
+                    cursor.execute(
+                        "ALTER TABLE tipos_crediario ADD CONSTRAINT fk_user_id_tipos_crediario FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;")
+                    print(
+                        "Coluna 'user_id' e FK adicionadas à tabela 'tipos_crediario'.")
+
+                cursor.execute("""
+                    SELECT conname FROM pg_constraint
+                    WHERE conrelid = 'public.tipos_crediario'::regclass AND contype = 'u' AND conkey = ARRAY[
+                        (SELECT attnum FROM pg_attribute WHERE attrelid = 'public.tipos_crediario'::regclass AND attname = 'user_id'),
+                        (SELECT attnum FROM pg_attribute WHERE attrelid = 'public.tipos_crediario'::regclass AND attname = 'nome_tipo')
+                    ];
+                """)
+                if not cursor.fetchone():
+                    print(
+                        "Adicionando UNIQUE constraint (user_id, nome_tipo) à tabela 'tipos_crediario'...")
+                    cursor.execute(
+                        "ALTER TABLE tipos_crediario ADD CONSTRAINT unique_user_tipo UNIQUE (user_id, nome_tipo);")
+                    print("UNIQUE constraint adicionada à tabela 'tipos_crediario'.")
 
     except UndefinedTable:
         print("Aviso: Alguma tabela não existe ao tentar verificar/atualizar constraints. Isso é normal se o 'create_table()' for executado primeiro.")

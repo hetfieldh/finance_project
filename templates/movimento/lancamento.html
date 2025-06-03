@@ -156,7 +156,7 @@
                     if (String(conta.id) !== String(selectedOriginAccountId)) {
                         const option = document.createElement('option');
                         option.value = conta.id;
-                        option.textContent = `${conta.nome_banco} - ${conta.numero_conta} (Saldo: R$ ${conta.saldo_atual.toFixed(2)})`;
+                        option.textContent = `${conta.nome_banco} - ${conta.tipo_conta} (Saldo: R$ ${conta.saldo_atual.toFixed(2)})`;
                         contaDestinoSelect.appendChild(option);
                     }
                 });

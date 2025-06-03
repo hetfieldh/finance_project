@@ -1,14 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Projeto Flask com PostgreSQL carregado!');
-    // Adicione seu JavaScript interativo aqui, se necessário.
-    // Ex: validações de formulário, interações dinâmicas.
 });
 
-// Função para formatar o input ao perder o foco (onblur)
-// Esta função agora APENAS remove não-dígitos e trunca para o comprimento desejado.
-// O preenchimento com zeros à esquerda FOI REMOVIDO para numero_conta.
 function formatInput(inputElement, desiredLength) {
-    let value = inputElement.value.replace(/\D/g, ''); // Remove qualquer caractere que não seja dígito
+    let value = inputElement.value.replace(/\D/g, '');
 
     // Se o valor for maior que o comprimento desejado, trunca
     if (value.length > desiredLength) {

@@ -4,7 +4,6 @@ from flask_login import login_required, current_user  # Importa current_user
 
 
 transacao_bp = Blueprint('transacoes', __name__, url_prefix='/transacoes')
-
 TIPOS_TRANSACAO = ["Entrada", "Saída"]
 
 

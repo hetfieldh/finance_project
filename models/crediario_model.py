@@ -1,4 +1,3 @@
-# models/crediario_model.py
 from database.db_manager import execute_query
 from psycopg.errors import UniqueViolation
 
@@ -10,7 +9,7 @@ class Crediario:
         self.tipo = tipo
         self.final = final
         self.limite = limite
-        self.user_id = user_id  # Adicionado o campo user_id
+        self.user_id = user_id 
 
     @staticmethod
     def create_table():
@@ -33,7 +32,7 @@ class Crediario:
             raise
 
     @staticmethod
-    def get_all_for_user(user_id):  # Renomeado de get_all para get_all_for_user
+    def get_all_for_user(user_id):
         """Retorna todos os crediários de um usuário específico."""
         query = "SELECT id, crediario, tipo, final, limite, user_id FROM crediarios WHERE user_id = %s ORDER BY crediario ASC;"
         rows = execute_query(query, (user_id,), fetchall=True)
@@ -43,7 +42,7 @@ class Crediario:
         return []
 
     @staticmethod
-    def get_by_id(crediario_id, user_id):  # Adicionado user_id
+    def get_by_id(crediario_id, user_id):
         """Retorna um crediário pelo ID e pelo user_id."""
         query = "SELECT id, crediario, tipo, final, limite, user_id FROM crediarios WHERE id = %s AND user_id = %s;"
         row = execute_query(query, (crediario_id, user_id), fetchone=True)
@@ -53,7 +52,7 @@ class Crediario:
         return None
 
     @staticmethod
-    def add(crediario, tipo, final, limite, user_id):  # Adicionado user_id
+    def add(crediario, tipo, final, limite, user_id):
         """Adiciona um novo crediário ao banco de dados para um usuário específico."""
         query = "INSERT INTO crediarios (crediario, tipo, final, limite, user_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;"
         try:
@@ -70,7 +69,7 @@ class Crediario:
             raise
 
     @staticmethod
-    def update(crediario_id, crediario_val, tipo, final, limite, user_id):  # Adicionado user_id
+    def update(crediario_id, crediario_val, tipo, final, limite, user_id):
         """Atualiza um crediário existente para um usuário específico."""
         query = "UPDATE crediarios SET crediario = %s, tipo = %s, final = %s, limite = %s WHERE id = %s AND user_id = %s;"
         try:
@@ -86,7 +85,7 @@ class Crediario:
             raise
 
     @staticmethod
-    def delete(crediario_id, user_id):  # Adicionado user_id
+    def delete(crediario_id, user_id):
         """Exclui um crediário pelo ID e pelo user_id."""
         query = "DELETE FROM crediarios WHERE id = %s AND user_id = %s;"
         execute_query(query, (crediario_id, user_id), commit=True)

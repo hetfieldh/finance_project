@@ -1,0 +1,15 @@
+{# templates/tipos_crediario/edit.html #}
+{% extends "base.html" %}
+
+{% block title %}Finanças | Editar Tipo de Crediário{% endblock %}
+{% block header_title %}Editar Tipo de Crediário{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('tipos_crediario.edit_tipo_crediario', tipo_id=tipo.id) }}" method="post">
+    <label for="nome_tipo">Nome do Tipo de Crediário:</label>
+    <input type="text" id="nome_tipo" name="nome_tipo" value="{{ tipo.nome_tipo }}" maxlength="100" required><br><br>
+
+    <button type="submit" class="button">Atualizar</button>
+    <a href="{{ url_for('tipos_crediario.list_tipos_crediario') }}" class="button cancel">Cancelar</a>
+</form>
+{% endblock %}

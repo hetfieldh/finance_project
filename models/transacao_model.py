@@ -1,4 +1,3 @@
-# models/transacao_model.py
 from database.db_manager import execute_query
 from psycopg.errors import UniqueViolation
 
@@ -7,8 +6,8 @@ class Transacao:
     def __init__(self, id, transacao, tipo, user_id):
         self.id = id
         self.transacao = transacao
-        self.tipo = tipo  # 'Entrada' ou 'Saída'
-        self.user_id = user_id  # Adicionado o campo user_id
+        self.tipo = tipo
+        self.user_id = user_id 
 
     @staticmethod
     def create_table():

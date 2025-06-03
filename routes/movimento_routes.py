@@ -1,8 +1,20 @@
-# routes/movimento_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime
 import calendar
+import locale
+
+# Define a localidade para português do Brasil
+# Isso afeta como calendar.month_name retorna os nomes dos meses
+try:
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+except locale.Error:
+    # Fallback para sistemas onde 'pt_BR.UTF-8' pode não estar disponível
+    # Tenta outras variantes comuns ou apenas 'pt_BR'
+    try:
+        locale.setlocale(locale.LC_ALL, 'pt_BR')
+    except locale.Error:
+        print("Aviso: Não foi possível definir a localidade 'pt_BR'. Os nomes dos meses podem não aparecer em português.")
 
 # Importe os modelos necessários
 from models.conta_bancaria_model import ContaBancaria
@@ -23,7 +35,6 @@ def index():
 @login_required
 def mov_lancamento():
     contas = ContaBancaria.get_all_for_user(current_user.id)
-    # ATUALIZADO: Chamar get_all_for_user para Transacao, passando o user_id
     transacoes = Transacao.get_all_for_user(current_user.id)
 
     # CONVERTER OBJETOS ContaBancaria PARA DICIONÁRIOS JSON-SERIALIZÁVEIS
@@ -34,7 +45,6 @@ def mov_lancamento():
             'nome_banco': conta.nome_banco,
             'numero_conta': conta.numero_conta,
             'tipo_conta': conta.tipo_conta,
-            # Garante que é float para JSON
             'saldo_atual': float(conta.saldo_atual),
             'limite_credito': float(conta.limite_credito) if conta.limite_credito is not None else None
         })

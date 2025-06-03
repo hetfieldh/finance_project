@@ -56,7 +56,7 @@ def add_contas_pagar():
 def edit_conta_pagar(conta_id):  # Renomeado de edit_user para edit_conta_pagar
     # Busca a conta a pagar pelo ID e pelo user_id para garantir que o usuário só edite as suas
     conta_pagar = ContasPagar.get_by_id(
-        conta_id, current_user.id)  # Usa get_by_id com user_id
+        conta_id, current_user.id)  
     if not conta_pagar:
         flash('Conta não encontrada ou você não tem permissão para editá-la.', 'danger')
         return redirect(url_for('contas_pagar.list_contas_pagar'))

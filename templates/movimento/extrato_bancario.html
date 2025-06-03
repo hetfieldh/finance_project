@@ -32,7 +32,8 @@
 </form>
 
 {% if movimentos %}
-<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.tipo_conta }} ({{ conta_selecionada.agencia }} / {{ conta_selecionada.numero_conta }})</h3>
+<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.tipo_conta }} ({{ conta_selecionada.agencia }}
+    / {{ conta_selecionada.numero_conta }})</h3>
 <p>Mês/Ano: {{ "%02d" % mes_extrato }}/{{ ano_extrato }}</p>
 <p><strong>Saldo Inicial do Mês:</strong> R$ {{ "%.2f" % saldo_inicial_mes }}</p>
 
@@ -56,7 +57,13 @@
         {% endfor %}
     </tbody>
 </table>
-<p><strong>Saldo Final do Mês:</strong> R$ {{ "%.2f" % saldo_final_mes }}</p>
+<p><strong>Saldo Final do Mês:</strong> <span class="
+    {% if saldo_final_mes > 0 %}
+        saldo-final-positivo
+    {% elif saldo_final_mes < 0 %}
+        saldo-final-negativo
+    {% endif %}
+">R$ {{ "%.2f" % saldo_final_mes }}</span></p>
 {% elif request.method == 'POST' %}
 <p>Nenhum movimento encontrado para a conta e período selecionados.</p>
 {% endif %}
@@ -68,6 +75,24 @@
 
     .despesa {
         color: red;
+    }
+
+    .saldo-final-positivo {
+        background-color: #28a745;
+        /* Verde */
+        color: white;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .saldo-final-negativo {
+        background-color: #dc3545;
+        /* Vermelho */
+        color: white;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-weight: bold;
     }
 </style>
 

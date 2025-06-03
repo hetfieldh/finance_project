@@ -1,28 +1,231 @@
+{# templates/crediarios/add.html #}
 {% extends "base.html" %}
 
-{% block title %}Finanças | Crediários{% endblock %}
+{% block title %}Finanças | Adicionar Crediário{% endblock %}
 {% block header_title %}Adicionar Novo Crediário{% endblock %}
 
 {% block content %}
 <form action="{{ url_for('crediarios.add_crediario') }}" method="post">
-    <label for="nome_crediario">Nome do Crediário (máx. 15 dígitos):</label>
-    <input type="text" id="nome_crediario" name="nome_crediario" maxlength="15" required><br><br>
+    <label for="crediario">Nome do Crediário:</label>
+    <input type="text" id="crediario" name="crediario" maxlength="100" required><br><br>
 
     <label for="tipo">Tipo:</label>
     <select id="tipo" name="tipo" required>
-        <option value="">Selecione um tipo</option>
-        {% for tipo_opcao in tipos_crediario %}
-        <option value="{{ tipo_opcao }}">{{ tipo_opcao }}</option>
+        <option value="">Selecione um Tipo</option>
+        {% for tipo_item in tipos_crediario %}
+        <option value="{{ tipo_item.nome_tipo }}">{{ tipo_item.nome_tipo }}</option>
         {% endfor %}
-    </select><br><br>
+    </select>
+    {# Botão para abrir o modal de cadastro de tipo #}
+    <button type="button" class="button" id="openAddTipoModal">Cadastrar Novo Tipo de Crediário</button>
+    <br><br>
 
-    <label for="final">Final (4 dígitos):</label>
-    <input type="number" id="final" name="final" min="1000" max="9999" required><br><br>
+    <label for="final">Final (Últimos dígitos do cartão/documento):</label>
+    <input type="number" id="final" name="final" required><br><br>
 
-    <label for="limite">Limite:</label>
+    <label for="limite">Limite de Crédito:</label>
     <input type="number" id="limite" name="limite" step="0.01" required><br><br>
 
     <button type="submit" class="button">Adicionar</button>
     <a href="{{ url_for('crediarios.list_crediarios') }}" class="button cancel">Cancelar</a>
 </form>
+
+{# O MODAL PARA ADICIONAR TIPO DE CREDIÁRIO #}
+<div id="addTipoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Cadastrar Novo Tipo de Crediário</h2>
+        <form id="addTipoForm" action="{{ url_for('tipos_crediario.add_tipo_crediario') }}" method="post">
+            <label for="modal_nome_tipo">Nome do Tipo de Crediário:</label>
+            <input type="text" id="modal_nome_tipo" name="nome_tipo" maxlength="100" required><br><br>
+
+            {# Campo oculto para indicar o URL de retorno após o POST #}
+            {# O next_url deve apontar de volta para a rota de adição do crediário #}
+            <input type="hidden" name="next_url" value="{{ url_for('crediarios.add_crediario') }}">
+
+            <button type="submit" class="button">Adicionar Tipo</button>
+            <button type="button" class="button cancel" id="cancelAddTipo">Cancelar</button>
+        </form>
+        <div id="modal-messages" class="flashes"></div> {# Para mensagens flash dentro do modal #}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('addTipoModal');
+        const openModalBtn = document.getElementById('openAddTipoModal');
+        const closeButton = modal.querySelector('.close-button');
+        const cancelAddTipoBtn = document.getElementById('cancelAddTipo');
+        const addTipoForm = document.getElementById('addTipoForm');
+        const tipoSelect = document.getElementById('tipo');
+        const modalMessages = document.getElementById('modal-messages');
+
+        // Função para abrir o modal
+        openModalBtn.onclick = function () {
+            modal.style.display = 'block';
+            modalMessages.innerHTML = ''; // Limpa mensagens anteriores
+            document.getElementById('modal_nome_tipo').value = ''; // Limpa o campo de input
+        }
+
+        // Função para fechar o modal
+        closeButton.onclick = function () {
+            modal.style.display = 'none';
+        }
+
+        cancelAddTipoBtn.onclick = function () {
+            modal.style.display = 'none';
+        }
+
+        // Fechar o modal se clicar fora dele
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Lidar com o envio do formulário do modal via AJAX
+        addTipoForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            const formData = new FormData(addTipoForm);
+            const nomeTipo = formData.get('nome_tipo');
+
+            fetch(addTipoForm.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text()) // Pega o texto da resposta (incluindo flashes)
+                .then(html => {
+                    // Cria um elemento temporário para parsear o HTML e extrair as mensagens flash
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const newFlashes = tempDiv.querySelector('.flashes');
+
+                    modalMessages.innerHTML = ''; // Limpa mensagens anteriores
+                    if (newFlashes) {
+                        modalMessages.innerHTML = newFlashes.innerHTML; // Adiciona as novas mensagens
+                    }
+
+                    // Verifica se a adição foi bem-sucedida (pode ser pela presença de 'success' na mensagem flash)
+                    if (html.includes('success')) { // Uma forma simples de verificar sucesso
+                        console.log('Tipo de crediário adicionado com sucesso via AJAX.');
+                        // Recarrega os tipos no select principal
+                        fetch('/tipos_crediario/') // Rota para listar todos os tipos
+                            .then(response => response.text())
+                            .then(listHtml => {
+                                console.log('HTML retornado para tipos_crediario/:', listHtml); // LOG: Verifique o HTML retornado
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(listHtml, 'text/html');
+
+                                // Seleciona qualquer linha de tabela dentro do corpo da tabela
+                                const newTipos = doc.querySelectorAll('table tbody tr');
+                                console.log('Linhas de tipos encontradas:', newTipos.length); // LOG: Quantas linhas foram encontradas
+
+                                // Limpa as opções existentes (exceto a primeira "Selecione um Tipo")
+                                while (tipoSelect.options.length > 1) {
+                                    tipoSelect.remove(1);
+                                }
+
+                                // Adiciona as novas opções
+                                newTipos.forEach(row => {
+                                    const id = row.querySelector('td:nth-child(1)') ? row.querySelector('td:nth-child(1)').textContent.trim() : '';
+                                    const nome = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.trim() : '';
+
+                                    console.log(`Adicionando opção: ID=${id}, Nome=${nome}`); // LOG: Verifique os dados extraídos
+                                    if (nome) { // Adiciona apenas se o nome não for vazio
+                                        const option = document.createElement('option');
+                                        option.value = nome; // O valor é o nome do tipo
+                                        option.textContent = nome;
+                                        tipoSelect.appendChild(option);
+                                    }
+                                });
+
+                                // Seleciona o tipo recém-adicionado
+                                tipoSelect.value = nomeTipo;
+                                console.log('Tipo selecionado após recarga:', tipoSelect.value); // LOG: Verifique o tipo selecionado
+                                modal.style.display = 'none'; // Fecha o modal
+                                // Limpa as mensagens flash após fechar o modal
+                                setTimeout(() => modalMessages.innerHTML = '', 3000); // Limpa após 3 segundos
+                            })
+                            .catch(error => {
+                                console.error('Erro ao recarregar tipos de crediário:', error);
+                                modalMessages.innerHTML = '<li class="danger">Erro ao recarregar tipos de crediário.</li>';
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar formulário do modal:', error);
+                    modalMessages.innerHTML = '<li class="danger">Ocorreu um erro ao adicionar o tipo.</li>';
+                });
+        });
+    });
+</script>
+
+{# Estilos básicos para o modal (você pode mover para static/css/style.css) #}
+<style>
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 1000;
+        /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        /* 10% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        /* Could be more or less, depending on screen size */
+        max-width: 500px;
+        /* Max width for larger screens */
+        border-radius: 8px;
+        position: relative;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-content form {
+        background-color: transparent;
+        /* Remove fundo do form dentro do modal */
+        border: none;
+        /* Remove borda do form dentro do modal */
+        box-shadow: none;
+        /* Remove sombra do form dentro do modal */
+        padding: 0;
+    }
+
+    .modal-content .flashes {
+        margin-top: 15px;
+    }
+</style>
 {% endblock %}
