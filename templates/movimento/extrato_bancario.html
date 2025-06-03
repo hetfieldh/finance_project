@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | {{ title }}{% endblock %}
-{% block header_title %}{{ title }}{% endblock %}
+{% block header_title %}{{ title}}{% endblock %}
 
 {% block content %}
 <h2>Extrato Bancário</h2>
 
-<form action="{{ url_for('movimento.mov_extrato') }}" method="post">
-    <label for="conta_id">Selecionar Conta:</label>
+<form action="{{ url_for('movimento.mov_extrato') }}" method="post" class="filter-form">
+    <label for="conta_id">Conta Bancária:</label>
     <select id="conta_id" name="conta_id" required>
-        <option value="">Selecione uma conta</option>
+        <option value="">Selecione a Conta</option>
         {% for conta in contas %}
         <option value="{{ conta.id }}" {% if conta_selecionada and conta.id==conta_selecionada.id %}selected{% endif %}>
-            {{ conta.nome_banco }} - {{ conta.tipo_conta }} ({{ conta.agencia }} / {{ conta.numero_conta }})
+            {{ conta.nome_banco }} - {{ conta.tipo_conta }} (Saldo: R$ {{ "%.2f" % conta.saldo_atual }})
         </option>
         {% endfor %}
     </select><br><br>
@@ -20,10 +20,10 @@
     <label for="mes_ano">Mês/Ano:</label>
     <select id="mes_ano" name="mes_ano" required>
         <option value="">Selecione o Mês/Ano</option>
-        {% for mes in meses_disponiveis %}
-        <option value="{{ mes.value }}" {% if mes_extrato and ano_extrato and mes.value==ano_extrato ~ '-' ~ "%02d" %
-            mes_extrato %}selected{% endif %}>
-            {{ mes.label }}
+        {% for mes_info in meses_disponiveis %}
+        <option value="{{ mes_info.value }}" {% if mes_extrato and ano_extrato and mes_info.value==(ano_extrato |
+            string) + '-' + ('%02d' % mes_extrato) %}selected{% endif %}>
+            {{ mes_info.label }}
         </option>
         {% endfor %}
     </select><br><br>
@@ -31,69 +31,170 @@
     <button type="submit" class="button">Gerar Extrato</button>
 </form>
 
-{% if movimentos %}
-<h3>Extrato de {{ conta_selecionada.nome_banco }} - {{ conta_selecionada.tipo_conta }} ({{ conta_selecionada.agencia }}
-    / {{ conta_selecionada.numero_conta }})</h3>
-<p>Mês/Ano: {{ "%02d" % mes_extrato }}/{{ ano_extrato }}</p>
-<p><strong>Saldo Inicial do Mês:</strong> R$ {{ "%.2f" % saldo_inicial_mes }}</p>
+{% if conta_selecionada %}
+<h3>Extrato de: [{{ conta_selecionada.nome_banco }} - {{ conta_selecionada.tipo_conta }} - {{
+    conta_selecionada.numero_conta }}]</h3>
+{% if mes_extrato and ano_extrato %}
+{# Define uma lista de nomes de meses em português #}
+{% set portuguese_months = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto",
+"Setembro", "Outubro", "Novembro", "Dezembro"] %}
+<p>Período: {{ portuguese_months[mes_extrato] }} de {{ ano_extrato }}</p>
 
+{# Adiciona a linha para exibir o Limite da Conta #}
+{% if conta_selecionada.limite_credito is defined and conta_selecionada.limite_credito is not none %}
+<p>Limite da Conta: R$ {{ "%.2f" % conta_selecionada.limite_credito }}</p>
+{% endif %}
+
+<p>Saldo Inicial do Período: R$ {{ "%.2f" % saldo_inicial_mes }}</p>
+<p class="
+    {% if saldo_final_mes < 0 %}
+        negative-balance-display
+    {% elif saldo_final_mes > 0 %}
+        positive-balance-display
+    {% endif %}
+">
+    Saldo Final do Período: R$ {{ "%.2f" % saldo_final_mes }}
+</p>
+{% endif %}
+
+{% if movimentos %}
 <table>
     <thead>
         <tr>
             <th>Data</th>
-            <th>Descrição</th>
             <th>Valor</th>
-            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for movimento in movimentos %}
-        <tr class="{{ 'receita' if movimento.valor >= 0 else 'despesa' }}">
+        <tr>
             <td>{{ movimento.data.strftime('%d/%m/%Y') }}</td>
-            <td>{{ movimento.descricao }}</td>
-            <td>R$ {{ "%.2f" % movimento.valor|abs }}</td>
-            <td>{{ 'Receita' if movimento.valor >= 0 else 'Despesa' }}</td>
+            <td class="
+                        {% if movimento.valor > 0 %}
+                            positive-balance
+                        {% elif movimento.valor < 0 %}
+                            negative-balance
+                        {% endif %}
+                    ">
+                R$ {{ "%.2f" % movimento.valor }}
+            </td>
+            <td>
+                {# Lógica para exibir a descrição do movimento #}
+                {{ movimento.descricao }}
+            </td>
+            <td>
+                {# Apenas o botão de EXCLUIR, com campo de senha #}
+                <form action="{{ url_for('movimento.delete_movimento', movimento_id=movimento.id) }}" method="post"
+                    style="display:inline;" onsubmit="return showPasswordModal(this);">
+                    <input type="hidden" name="conta_id" value="{{ conta_selecionada.id }}">
+                    <input type="hidden" name="mes_ano"
+                        value="{{ (ano_extrato | string) + '-' + ('%02d' % mes_extrato) }}">
+                    <button type="submit" class="icon-button delete" title="Excluir Lançamento">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<p><strong>Saldo Final do Mês:</strong> <span class="
-    {% if saldo_final_mes > 0 %}
-        saldo-final-positivo
-    {% elif saldo_final_mes < 0 %}
-        saldo-final-negativo
-    {% endif %}
-">R$ {{ "%.2f" % saldo_final_mes }}</span></p>
-{% elif request.method == 'POST' %}
-<p>Nenhum movimento encontrado para a conta e período selecionados.</p>
+{% else %}
+<p>Nenhum lançamento encontrado para o período selecionado nesta conta.</p>
+{% endif %}
+{% else %}
+<p>Por favor, selecione uma conta e um mês/ano para gerar o extrato.</p>
 {% endif %}
 
+{# Modal para confirmação de senha #}
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirme sua Senha</h3>
+        <p>Para excluir este lançamento, por favor, digite sua senha:</p>
+        <input type="password" id="modalPasswordInput" class="modal-input" required>
+        <div class="modal-buttons">
+            <button type="button" id="confirmDeleteButton" class="button">Confirmar</button>
+            <button type="button" id="cancelDeleteButton" class="button cancel">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    let currentForm = null; // Variável para armazenar o formulário que acionou o modal
+
+    // Função para mostrar o modal de senha
+    function showPasswordModal(form) {
+        currentForm = form; // Armazena o formulário atual
+        document.getElementById('passwordModal').style.display = 'block';
+        document.getElementById('modalPasswordInput').value = ''; // Limpa o campo de senha
+        document.getElementById('modalPasswordInput').focus(); // Foca no campo de senha
+        return false; // Impede a submissão imediata do formulário
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const passwordModal = document.getElementById('passwordModal');
+        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+        const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+        const modalPasswordInput = document.getElementById('modalPasswordInput');
+
+        // Evento para o botão "Confirmar" no modal
+        confirmDeleteButton.addEventListener('click', function () {
+            const password = modalPasswordInput.value;
+            if (password) {
+                // Adiciona a senha como um campo oculto ao formulário armazenado
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'hidden';
+                passwordInput.name = 'password';
+                passwordInput.value = password;
+                currentForm.appendChild(passwordInput);
+
+                passwordModal.style.display = 'none'; // Esconde o modal
+                currentForm.submit(); // Submete o formulário original
+            } else {
+                console.error("Por favor, digite sua senha.");
+            }
+        });
+
+        // Evento para o botão "Cancelar" no modal
+        cancelDeleteButton.addEventListener('click', function () {
+            passwordModal.style.display = 'none'; // Esconde o modal
+            currentForm = null; // Limpa a referência do formulário
+        });
+
+        // Fechar o modal clicando fora dele
+        window.addEventListener('click', function (event) {
+            if (event.target == passwordModal) {
+                passwordModal.style.display = 'none';
+                currentForm = null;
+            }
+        });
+    });
+</script>
 <style>
-    .receita {
-        color: green;
-    }
-
-    .despesa {
-        color: red;
-    }
-
-    .saldo-final-positivo {
+    /* Estilos para o saldo final */
+    .positive-balance-display {
         background-color: #28a745;
         /* Verde */
         color: white;
-        padding: 2px 5px;
-        border-radius: 4px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+        /* Para que o fundo se ajuste ao texto */
         font-weight: bold;
     }
 
-    .saldo-final-negativo {
+    .negative-balance-display {
         background-color: #dc3545;
         /* Vermelho */
         color: white;
-        padding: 2px 5px;
-        border-radius: 4px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
         font-weight: bold;
     }
 </style>
-
 {% endblock %}

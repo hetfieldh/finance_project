@@ -1,4 +1,5 @@
-from database.db_manager import execute_query
+from database.db_manager import execute_query, get_db_cursor
+from psycopg.errors import UniqueViolation
 
 
 class ContaBancaria:
@@ -94,4 +95,18 @@ class ContaBancaria:
         """Exclui uma conta bancária pelo ID."""
         query = "DELETE FROM contas_bancarias WHERE id = %s;"
         execute_query(query, (conta_id,), commit=True)
+        return True
+
+    @staticmethod
+    def _adjust_balance(conta_id, valor_ajuste):
+        """
+        Método auxiliar para ajustar o saldo atual de uma conta bancária.
+        Usado internamente por MovimentoBancario para manter a consistência.
+        """
+        query = """
+        UPDATE contas_bancarias
+        SET saldo_atual = saldo_atual + %s
+        WHERE id = %s;
+        """
+        execute_query(query, (valor_ajuste, conta_id), commit=True)
         return True

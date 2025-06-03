@@ -1,11 +1,11 @@
-{# templates/crediarios/add.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | Adicionar Crediário{% endblock %}
 {% block header_title %}Adicionar Novo Crediário{% endblock %}
 
 {% block content %}
-<form action="{{ url_for('crediarios.add_crediario') }}" method="post">
+<form id="crediarioForm" action="{{ url_for('crediarios.add_crediario') }}" method="post"> {# Adicionado ID ao
+    formulário principal #}
     <label for="crediario">Nome do Crediário:</label>
     <input type="text" id="crediario" name="crediario" maxlength="100" required><br><br>
 
@@ -20,8 +20,19 @@
     <button type="button" class="button" id="openAddTipoModal">Cadastrar Novo Tipo de Crediário</button>
     <br><br>
 
-    <label for="final">Final (Últimos dígitos do cartão/documento):</label>
-    <input type="number" id="final" name="final" required><br><br>
+    {# Campo 'final' ajustado: type="text", maxlength="4", inputmode="numeric", pattern="[0-9]*", e oninput para
+    validação #}
+    <div class="mb-3">
+        <label for="final" class="form-label">Final (Últimos dígitos do cartão/documento):</label>
+        <input type="text" {# Alterado de type="number" para type="text" para melhor controle com maxlength e oninput #}
+            id="final" name="final" class="form-control" maxlength="4" {# Limita a entrada a 4 caracteres #}
+            inputmode="numeric" {# Sugere ao navegador um teclado numérico em dispositivos móveis #} pattern="[0-9]*" {#
+            Garante que apenas dígitos de 0-9 sejam considerados válidos #}
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);" {# Remove caracteres não numéricos e
+            limita a 4 dígitos #} required>
+        <div class="form-text">Digite os 4 últimos dígitos do cartão/documento.</div>
+    </div>
+    <br>
 
     <label for="limite">Limite de Crédito:</label>
     <input type="number" id="limite" name="limite" step="0.01" required><br><br>
@@ -55,6 +66,9 @@
 {% block scripts_extra %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const crediarioForm = document.getElementById('crediarioForm'); // Referência ao formulário principal
+        const finalInput = document.getElementById('final'); // Referência ao campo 'final'
+
         const modal = document.getElementById('addTipoModal');
         const openModalBtn = document.getElementById('openAddTipoModal');
         const closeButton = modal.querySelector('.close-button');
@@ -62,6 +76,13 @@
         const addTipoForm = document.getElementById('addTipoForm');
         const tipoSelect = document.getElementById('tipo');
         const modalMessages = document.getElementById('modal-messages');
+
+        // Lógica para preencher o campo 'final' com zeros à esquerda antes do submit
+        crediarioForm.addEventListener('submit', function (event) {
+            let finalValue = finalInput.value;
+            // Preenche com zeros à esquerda até ter 4 dígitos
+            finalInput.value = finalValue.padStart(4, '0');
+        });
 
         // Função para abrir o modal
         openModalBtn.onclick = function () {
@@ -164,68 +185,5 @@
     });
 </script>
 
-{# Estilos básicos para o modal (você pode mover para static/css/style.css) #}
-<style>
-    .modal {
-        display: none;
-        /* Hidden by default */
-        position: fixed;
-        /* Stay in place */
-        z-index: 1000;
-        /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%;
-        /* Full width */
-        height: 100%;
-        /* Full height */
-        overflow: auto;
-        /* Enable scroll if needed */
-        background-color: rgba(0, 0, 0, 0.4);
-        /* Black w/ opacity */
-    }
 
-    .modal-content {
-        background-color: #fefefe;
-        margin: 10% auto;
-        /* 10% from the top and centered */
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        /* Could be more or less, depending on screen size */
-        max-width: 500px;
-        /* Max width for larger screens */
-        border-radius: 8px;
-        position: relative;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    }
-
-    .close-button {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close-button:hover,
-    .close-button:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .modal-content form {
-        background-color: transparent;
-        /* Remove fundo do form dentro do modal */
-        border: none;
-        /* Remove borda do form dentro do modal */
-        box-shadow: none;
-        /* Remove sombra do form dentro do modal */
-        padding: 0;
-    }
-
-    .modal-content .flashes {
-        margin-top: 15px;
-    }
-</style>
 {% endblock %}

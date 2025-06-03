@@ -103,7 +103,6 @@ def add_conta_bancaria():
     return render_template('contas_bancarias/add.html', tipos_conta=TIPOS_CONTA)
 
 
-# <-- Blueprint name usado aqui
 @conta_bancaria_bp.route('/edit/<int:conta_id>', methods=['GET', 'POST'])
 @login_required
 def edit_conta_bancaria(conta_id):
@@ -113,11 +112,15 @@ def edit_conta_bancaria(conta_id):
         return redirect(url_for('contas_bancarias.list_contas_bancarias'))
 
     if request.method == 'POST':
+        # Esta parte do código é executada APENAS quando o formulário é SUBMETIDO.
+        # Os valores aqui vêm do `request.form`, que são os valores que o usuário digitou/enviou.
         nome_banco = request.form['nome_banco']
         agencia = request.form['agencia']
         numero_conta = request.form['numero_conta']
         tipo_conta = request.form['tipo_conta']
+        # Este valor virá do formulário (disabled)
         saldo_inicial = request.form['saldo_inicial']
+        # Este valor virá do formulário (disabled)
         saldo_atual = request.form['saldo_atual']
         limite_credito = request.form.get('limite_credito')
 
@@ -150,6 +153,7 @@ def edit_conta_bancaria(conta_id):
                 flash('Nome do Banco deve ter no máximo 100 caracteres.', 'warning')
                 return render_template('contas_bancarias/edit.html', conta=conta, tipos_conta=TIPOS_CONTA)
 
+            # Chame o método update do seu modelo ContaBancaria
             updated_conta = ContaBancaria.update(
                 conta_id, nome_banco, agencia_val, numero_conta_val, tipo_conta,
                 saldo_inicial_float, saldo_atual_float, limite_credito_float
@@ -170,10 +174,10 @@ def edit_conta_bancaria(conta_id):
             flash(
                 'Ocorreu um erro inesperado ao atualizar a conta. Verifique os logs do servidor.', 'danger')
 
+    # Esta parte do código é executada quando a página é carregada pela primeira vez (GET request)
     return render_template('contas_bancarias/edit.html', conta=conta, tipos_conta=TIPOS_CONTA)
 
 
-# <-- Blueprint name usado aqui
 @conta_bancaria_bp.route('/delete/<int:conta_id>', methods=['POST'])
 @login_required
 def delete_conta_bancaria(conta_id):

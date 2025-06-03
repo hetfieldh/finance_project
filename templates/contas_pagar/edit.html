@@ -4,13 +4,13 @@
 {% block header_title %}Editar Conta{% endblock %}
 
 {% block content %}
-<form action="{{ url_for('contas_pagar.edit_user', conta_id=conta.id) }}" method="post">
+<form action="{{ url_for('contas_pagar.edit_conta_pagar', conta_id=conta_pagar.id) }}" method="post">
     <label for="conta">Conta:</label>
-    <input type="text" id="conta" name="conta" value="{{ conta.conta }}" required><br><br>
+    <input type="text" id="conta" name="conta" value="{{ conta_pagar.conta }}" required><br><br>
     <label for="tipo">Tipo:</label>
     <select id="tipo" name="tipo" required>
-        <option value="Receita" {% if conta.tipo=='Receita' %}selected{% endif %}>Receita</option>
-        <option value="Despesa" {% if conta.tipo=='Despesa' %}selected{% endif %}>Despesa</option>
+        <option value="Receita" {% if conta_pagar.tipo=='Receita' %}selected{% endif %}>Receita</option>
+        <option value="Despesa" {% if conta_pagar.tipo=='Despesa' %}selected{% endif %}>Despesa</option>
     </select><br><br>
     <button type="submit" class="button">Atualizar</button>
     <a href="{{ url_for('contas_pagar.list_contas_pagar') }}" class="button cancel">Cancelar</a>

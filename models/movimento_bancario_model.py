@@ -38,7 +38,7 @@ class MovimentoBancario:
         Esta operação é atômica (transacional).
         """
         try:
-            with get_db_cursor(commit=True) as cursor:
+            with get_db_cursor(commit=True) as cursor:  # Transação aqui
                 conta = ContaBancaria.get_by_id(conta_id)
                 if not conta:
                     raise ValueError("Conta bancária não encontrada.")
@@ -48,8 +48,9 @@ class MovimentoBancario:
                 # Validação de saldo (Requisito 2. Validações obrigatórias)
                 if valor < 0:  # Se o lançamento é uma despesa (valor negativo)
                     if novo_saldo < 0 and (conta.limite_credito is None or abs(novo_saldo) > conta.limite_credito):
+                        # MENSAGEM DE ERRO ALTERADA AQUI
                         raise ValueError(
-                            "Lançamento resultaria em saldo negativo além do limite definido.")
+                            f"Saldo insuficiente na conta [{conta.nome_banco} | {conta.tipo_conta} | {conta.numero_conta}] ou limite de crédito excedido.")
 
                 # 1. Inserir o movimento
                 cursor.execute(
@@ -111,7 +112,7 @@ class MovimentoBancario:
         if valor < 0:  # Se é uma saída
             if novo_saldo < 0 and (conta.limite_credito is None or abs(novo_saldo) > conta.limite_credito):
                 raise ValueError(
-                    f"O Limite da conta ({conta.nome_banco} | {conta.tipo_conta}) foi excedido! Isso resultaria em saldo negativo além do limite definido.")
+                    f"Saldo insuficiente na conta [{conta.nome_banco} | {conta.tipo_conta} | {conta.numero_conta}] ou limite de crédito excedido.")
 
         cursor.execute(
             'INSERT INTO movimentos_bancarios (conta_id, data, valor, descricao) VALUES (%s, %s, %s, %s)',
@@ -148,3 +149,47 @@ class MovimentoBancario:
         data_limite = datetime(ano, mes, 1).strftime('%Y-%m-%d')
         saldo = execute_query(query, (conta_id, data_limite), fetchone=True)
         return float(saldo[0]) if saldo and saldo[0] is not None else 0.0
+
+    @staticmethod
+    def get_by_id(movimento_id):
+        """Retorna um movimento bancário pelo ID."""
+        query = 'SELECT id, conta_id, data, valor, descricao FROM movimentos_bancarios WHERE id = %s'
+        row = execute_query(query, (movimento_id,), fetchone=True)
+        return MovimentoBancario(row[0], row[1], row[2], float(row[3]), row[4]) if row else None
+
+    @staticmethod
+    def delete(movimento_id, user_id):
+        """
+        Exclui um movimento bancário e reverte o saldo da conta.
+        Esta operação é atômica (transacional) e verifica a posse do movimento.
+        """
+        try:
+            with get_db_cursor(commit=True) as cursor:
+                movimento = MovimentoBancario.get_by_id(movimento_id)
+                if not movimento:
+                    raise ValueError("Movimento bancário não encontrado.")
+
+                conta = ContaBancaria.get_by_id(movimento.conta_id)
+                if not conta or conta.user_id != user_id:
+                    raise ValueError(
+                        "Conta não encontrada ou você não tem permissão para esta conta.")
+
+                # Reverter o saldo da conta: subtrair o valor do movimento
+                # Se o movimento era uma entrada (+X), subtraímos X.
+                # Se o movimento era uma saída (-X), subtraímos -X (ou seja, somamos X).
+                novo_saldo = conta.saldo_atual - movimento.valor
+
+                # Atualizar o saldo da conta
+                cursor.execute(
+                    'UPDATE contas_bancarias SET saldo_atual = %s WHERE id = %s',
+                    (novo_saldo, conta.id)
+                )
+
+                # Excluir o movimento
+                cursor.execute(
+                    'DELETE FROM movimentos_bancarios WHERE id = %s',
+                    (movimento_id,)
+                )
+                return True
+        except Exception as e:
+            raise e

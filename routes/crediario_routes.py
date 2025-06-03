@@ -25,7 +25,6 @@ def add_crediario():
 
     if request.method == 'POST':
         crediario_nome = request.form['crediario']
-        # Este será o nome do tipo (string)
         tipo_selecionado = request.form['tipo']
         final = request.form['final']
         limite = request.form['limite']
@@ -34,11 +33,15 @@ def add_crediario():
             flash('Todos os campos são obrigatórios!', 'warning')
             return render_template('crediarios/add.html', tipos_crediario=tipos_crediario_disponiveis)
 
+        # Validação para o campo 'final'
+        if not final.isdigit() or len(final) != 4:
+            flash('O campo "Final (Últimos dígitos do cartão/documento)" deve conter exatamente 4 dígitos numéricos.', 'danger')
+            return render_template('crediarios/add.html', tipos_crediario=tipos_crediario_disponiveis)
+
         try:
             limite_float = float(limite)
             final_int = int(final)
 
-            # O campo 'tipo' no modelo Crediario ainda é uma string
             new_crediario = Crediario.add(
                 crediario_nome, tipo_selecionado, final_int, limite_float, current_user.id
             )
@@ -65,6 +68,7 @@ def add_crediario():
 def edit_crediario(crediario_id):
     """Edita um crediário existente."""
     crediario = Crediario.get_by_id(crediario_id, current_user.id)
+
     if not crediario:
         flash('Crediário não encontrado ou você não tem permissão para editá-lo.', 'danger')
         return redirect(url_for('crediarios.list_crediarios'))
@@ -82,6 +86,11 @@ def edit_crediario(crediario_id):
 
         if not (crediario_nome and tipo_selecionado and final and limite):
             flash('Todos os campos são obrigatórios!', 'warning')
+            return render_template('crediarios/edit.html', crediario=crediario, tipos_crediario=tipos_crediario_disponiveis)
+
+        # Validação para o campo 'final'
+        if not final.isdigit() or len(final) != 4:
+            flash('O campo "Final (Últimos dígitos do cartão/documento)" deve conter exatamente 4 dígitos numéricos.', 'danger')
             return render_template('crediarios/edit.html', crediario=crediario, tipos_crediario=tipos_crediario_disponiveis)
 
         try:
@@ -127,7 +136,7 @@ def delete_crediario(crediario_id):
         else:
             flash('Erro ao excluir crediário.', 'danger')
     except Exception as e:
-        print(f"Erro inesperado ao excluir crediário: {e}")
+        print(f"Erro inesperado ao excluir crediario: {e}")
         flash('Ocorreu um erro inesperado ao excluir o crediário.', 'danger')
 
     return redirect(url_for('crediarios.list_crediarios'))
