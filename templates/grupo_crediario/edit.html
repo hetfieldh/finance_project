@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Grupo Crediário{% endblock %}
+
+{% block header_title %}Editar Grupo Crediário{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Editar Grupo Crediário</h2>
+    <form method="POST" action="{{ url_for('grupo_crediario.edit_grupo_crediario', grupo_id=grupo.id) }}">
+        <label for="grupo">Nome do Grupo:</label>
+        <input type="text" id="grupo" name="grupo" value="{{ grupo.grupo }}" required><br><br>
+
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo" required>
+            {% for tipo_opcao in tipos_transacao %}
+            <option value="{{ tipo_opcao }}" {% if tipo_opcao==grupo.tipo %}selected{% endif %}>
+                {{ tipo_opcao }}
+            </option>
+            {% endfor %}
+        </select><br><br>
+
+        <input type="submit" value="Salvar Alterações" class="btn btn-primary">
+    </form>
+    <br>
+    <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}" class="btn btn-secondary">Voltar para a Lista</a>
+</div>
+{% endblock %}

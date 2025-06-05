@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {# Confirmação: Font Awesome está sendo carregado corretamente via CDN #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <link rel="icon" href="{{ url_for('static', filename='images/icone.png') }}" type="image/png">
@@ -38,6 +39,7 @@
                         <a href="{{ url_for('crediarios.list_crediarios') }}">Crediários</a>
                         <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Contas Bancárias</a>
                         <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
+                        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}">Grupos de Crediário</a>
                         <a href="{{ url_for('transacoes.list_transacoes')}}">Transações</a>
                     </div>
                 </li>

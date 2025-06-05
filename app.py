@@ -11,6 +11,7 @@ from routes.crediario_routes import crediario_bp
 from routes.movimento_routes import movimento_bp
 from routes.transacao_routes import transacao_bp
 from routes.tipo_crediario_routes import tipo_crediario_bp
+from routes.grupo_crediario_routes import grupo_crediario_bp # Importado corretamente
 
 # modelos
 from models.user_model import User
@@ -20,6 +21,7 @@ from models.crediario_model import Crediario
 from models.movimento_bancario_model import MovimentoBancario
 from models.transacao_model import Transacao
 from models.tipo_crediario_model import TipoCrediario
+from models.grupo_crediario_model import GrupoCrediario # Importado corretamente
 
 # checar e atualizar constraints
 from database.db_manager import check_and_update_table_constraints
@@ -38,8 +40,6 @@ login_manager.login_message = "Faça login para acessar o sistema."
 login_manager.login_message_category = "info"
 
 # Callback para recarregar o objeto User do ID do usuário armazenado na sessão
-
-
 @login_manager.user_loader
 def load_user(user_id):
     # Flask-Login espera que esta função retorne um objeto User ou None se o ID não for válido.
@@ -55,6 +55,7 @@ app.register_blueprint(crediario_bp)
 app.register_blueprint(movimento_bp)
 app.register_blueprint(transacao_bp)
 app.register_blueprint(tipo_crediario_bp)
+app.register_blueprint(grupo_crediario_bp) # Registrado corretamente
 
 
 # 4. Rota Home Principal
@@ -82,13 +83,14 @@ def internal_server_error(e):
 
 if __name__ == '__main__':
     with app.app_context():
-        User.create_table()            # Tabela de usuários (pai de muitas)
-        ContaBancaria.create_table()   # Tabela de contas bancárias (depende de users)
-        ContasPagar.create_table()     # Tabela de contas a pagar
-        Crediario.create_table()       # Tabela de crediários
-        Transacao.create_table()       # Tabela de tipos de transação
-        MovimentoBancario.create_table()  # Tabela de movimentos bancários
+        User.create_table()             # Tabela de usuários (pai de muitas)
+        ContaBancaria.create_table()    # Tabela de contas bancárias (depende de users)
+        ContasPagar.create_table()      # Tabela de contas a pagar
+        Crediario.create_table()        # Tabela de crediários
+        Transacao.create_table()        # Tabela de tipos de transação
+        MovimentoBancario.create_table()# Tabela de movimentos bancários
         TipoCrediario.create_table()
+        GrupoCrediario.create_table()   # Tabela de Grupo Crediário criada corretamente
         # Chama a função para verificar e adicionar colunas ou constraints se necessário.
         # Útil para atualizações de esquema sem apagar o banco de dados.
         check_and_update_table_constraints()

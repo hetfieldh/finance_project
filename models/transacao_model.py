@@ -7,7 +7,7 @@ class Transacao:
         self.id = id
         self.transacao = transacao
         self.tipo = tipo
-        self.user_id = user_id 
+        self.user_id = user_id
 
     @staticmethod
     def create_table():
@@ -15,7 +15,7 @@ class Transacao:
         query = """
         CREATE TABLE IF NOT EXISTS transacoes (
             id SERIAL PRIMARY KEY,
-            user_id INTEGER NOT NULL, -- Chave estrangeira para a tabela de usuários
+            user_id INTEGER NOT NULL,
             transacao VARCHAR(100) NOT NULL,
             tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('Entrada', 'Saída')),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

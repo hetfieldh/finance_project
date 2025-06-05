@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Grupo Crediário{% endblock %}
+
+{% block header_title %}Adicionar Grupo Crediário{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <h2>Adicionar Novo Grupo Crediário</h2>
+    <form method="POST" action="{{ url_for('grupo_crediario.add_grupo_crediario') }}">
+        <div class="form-group">
+            <label for="grupo">Grupo:</label>
+            <input type="text" id="grupo" name="grupo" required>
+        </div>
+        <div class="form-group">
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" required>
+                <option value="">Selecione o Tipo</option>
+                <option value="Compra">Compra</option>
+                <option value="Estorno">Estorno</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Grupo Crediário</button>
+        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

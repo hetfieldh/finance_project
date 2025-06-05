@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Grupos Crediário{% endblock %}
+
+{% block header_title %}Grupos de Crediário{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Lista de Grupos Crediário</h2>
+    <a href="{{ url_for('grupo_crediario.add_grupo_crediario') }}" class="btn btn-add">Adicionar Novo Grupo
+        Crediário</a>
+
+    {% if grupo_crediario %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Grupo</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grupo in grupo_crediario %}
+            <tr>
+                <td>{{ grupo.id }}</td>
+                <td>{{ grupo.grupo }}</td>
+                <td>{{ grupo.tipo }}</td>
+                <td class="actions"> {# Adicionado classe 'actions' para estilização #}
+                    {# Botão de EDITAR #}
+                    <a href="{{ url_for('grupo_crediario.edit_grupo_crediario', grupo_id=grupo.id) }}"
+                        class="icon-button edit" title="Editar">
+                        <i class="fas fa-edit"></i> {# Requer Font Awesome no base.html #}
+                    </a>
+
+                    {# Botão de EXCLUIR #}
+                    <form action="{{ url_for('grupo_crediario.delete_grupo_crediario', grupo_id=grupo.id) }}"
+                        method="post" style="display:inline;">
+                        <button type="submit" class="icon-button delete" title="Excluir"
+                            onclick="return confirm('Tem certeza que deseja excluir o grupo {{ grupo.grupo }}?');">
+                            <i class="fas fa-times-circle"></i> {# Requer Font Awesome no base.html #}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum Grupo de Crediário cadastrado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}
