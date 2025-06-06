@@ -1,3 +1,4 @@
+{# templates/extrato/extrato_bancario.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | {{ title }}{% endblock %}
@@ -6,29 +7,30 @@
 {% block content %}
 <h2>Extrato Bancário</h2>
 
-<form action="{{ url_for('movimento.mov_extrato') }}" method="post" class="filter-form">
-    <label for="conta_id">Conta Bancária:</label>
-    <select id="conta_id" name="conta_id" required>
-        <option value="">Selecione a Conta</option>
-        {% for conta in contas %}
-        <option value="{{ conta.id }}" {% if conta_selecionada and conta.id==conta_selecionada.id %}selected{% endif %}>
-            {{ conta.nome_banco }} - {{ conta.tipo_conta }} (Saldo: R$ {{ "%.2f" % conta.saldo_atual }})
-        </option>
-        {% endfor %}
-    </select><br><br>
+<form action="{{ url_for('extrato.extrato_bancario') }}" method="post" class="filter-form"> {# <-- ALTERADO AQUI #}
+        <label for="conta_id">Conta Bancária:</label>
+        <select id="conta_id" name="conta_id" required>
+            <option value="">Selecione a Conta</option>
+            {% for conta in contas %}
+            <option value="{{ conta.id }}" {% if conta_selecionada and conta.id==conta_selecionada.id %}selected{% endif
+                %}>
+                {{ conta.nome_banco }} - {{ conta.tipo_conta }} (Saldo: R$ {{ "%.2f" % conta.saldo_atual }})
+            </option>
+            {% endfor %}
+        </select><br><br>
 
-    <label for="mes_ano">Mês/Ano:</label>
-    <select id="mes_ano" name="mes_ano" required>
-        <option value="">Selecione o Mês/Ano</option>
-        {% for mes_info in meses_disponiveis %}
-        <option value="{{ mes_info.value }}" {% if mes_extrato and ano_extrato and mes_info.value==(ano_extrato |
-            string) + '-' + ('%02d' % mes_extrato) %}selected{% endif %}>
-            {{ mes_info.label }}
-        </option>
-        {% endfor %}
-    </select><br><br>
+        <label for="mes_ano">Mês/Ano:</label>
+        <select id="mes_ano" name="mes_ano" required>
+            <option value="">Selecione o Mês/Ano</option>
+            {% for mes_info in meses_disponiveis %}
+            <option value="{{ mes_info.value }}" {% if mes_extrato and ano_extrato and mes_info.value==(ano_extrato |
+                string) + '-' + ('%02d' % mes_extrato) %}selected{% endif %}>
+                {{ mes_info.label }}
+            </option>
+            {% endfor %}
+        </select><br><br>
 
-    <button type="submit" class="button">Gerar Extrato</button>
+        <button type="submit" class="button">Gerar Extrato</button>
 </form>
 
 {% if conta_selecionada %}
@@ -72,12 +74,12 @@
         <tr>
             <td>{{ movimento.data.strftime('%d/%m/%Y') }}</td>
             <td class="
-                        {% if movimento.valor > 0 %}
-                            positive-balance
-                        {% elif movimento.valor < 0 %}
-                            negative-balance
-                        {% endif %}
-                    ">
+                                {% if movimento.valor > 0 %}
+                                    positive-balance
+                                {% elif movimento.valor < 0 %}
+                                    negative-balance
+                                {% endif %}
+                            ">
                 R$ {{ "%.2f" % movimento.valor }}
             </td>
             <td>
@@ -86,8 +88,8 @@
             </td>
             <td>
                 {# Apenas o botão de EXCLUIR, com campo de senha #}
-                <form action="{{ url_for('movimento.delete_movimento', movimento_id=movimento.id) }}" method="post"
-                    style="display:inline;" onsubmit="return showPasswordModal(this);">
+                <form action="{{ url_for('extrato.delete_movimento', movimento_id=movimento.id) }}" method="post" {# <--
+                    ALTERADO AQUI #} style="display:inline;" onsubmit="return showPasswordModal(this);">
                     <input type="hidden" name="conta_id" value="{{ conta_selecionada.id }}">
                     <input type="hidden" name="mes_ano"
                         value="{{ (ano_extrato | string) + '-' + ('%02d' % mes_extrato) }}">

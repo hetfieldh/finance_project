@@ -11,7 +11,7 @@ class TipoCrediario:
 
     @staticmethod
     def create_table():
-        """Cria a tabela 'tipos_crediario' se ela não existir."""
+        """Cria tabela 'tipos_crediario' se ela não existir."""
         query = """
         CREATE TABLE IF NOT EXISTS tipos_crediario (
             id SERIAL PRIMARY KEY,

@@ -1,3 +1,4 @@
+# database/bd_manager.py
 import psycopg
 from psycopg.errors import OperationalError, UniqueViolation, UndefinedTable
 from config import Config

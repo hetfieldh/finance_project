@@ -22,7 +22,7 @@
         <tr>
             <td>{{ conta_pagar.id }}</td>
             <td>{{ conta_pagar.conta }}</td>
-            <td>{{ conta_pagar.tipo }}</td> {# Mantido, pois existe no modelo #}
+            <td>{{ conta_pagar.tipo }}</td>
             <td>
                 {# Botão de EDITAR - CORRIGIDO o endpoint #}
                 <a href="{{ url_for('contas_pagar.edit_conta_pagar', conta_id=conta_pagar.id) }}"

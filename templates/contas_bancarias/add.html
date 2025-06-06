@@ -1,8 +1,10 @@
+{# templates/contas_bancarias/add.html #}
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
-{% block header_title %}Adicionar Nova Conta Bancária{% endblock %} {# <-- Título atualizado #} {% block content %}
-    <form action="{{ url_for('contas_bancarias.add_conta_bancaria') }}" method="post"
+{% block header_title %}Adicionar Nova Conta Bancária{% endblock %}
+{% block content %}
+<form action="{{ url_for('contas_bancarias.add_conta_bancaria') }}" method="post"
     onsubmit="return formatBeforeSubmit()">
     <label for="nome_banco">Nome do Banco:</label>
     <input type="text" id="nome_banco" name="nome_banco" maxlength="100" required><br><br>
@@ -31,6 +33,6 @@
 
     <button type="submit" class="button">Adicionar</button>
     <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}" class="button cancel">Cancelar</a>
-    </form>
+</form>
 
-    {% endblock %}
+{% endblock %}

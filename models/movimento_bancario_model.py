@@ -1,3 +1,4 @@
+# models/movimento_bancario_model.py
 from database.db_manager import execute_query, get_db_cursor
 from datetime import datetime
 from models.conta_bancaria_model import ContaBancaria

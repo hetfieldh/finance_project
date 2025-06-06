@@ -1,3 +1,4 @@
+# routes/grupo_crediario_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.grupo_crediario_model import GrupoCrediario
 from flask_login import login_required, current_user

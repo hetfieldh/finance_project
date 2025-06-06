@@ -1,3 +1,4 @@
+# models/user_model.py
 from database.db_manager import execute_query
 from psycopg.errors import UniqueViolation
 from werkzeug.security import generate_password_hash, check_password_hash

@@ -1,3 +1,4 @@
+// static/js/script.js
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Projeto Flask com PostgreSQL carregado!');
 });

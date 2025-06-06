@@ -1,3 +1,4 @@
+# routes/contas_pagar_route.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.contas_pagar_model import ContasPagar
 from flask_login import login_required, current_user  # Importa current_user

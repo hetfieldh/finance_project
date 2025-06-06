@@ -1,3 +1,4 @@
+# routes/transacao_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.transacao_model import Transacao
 from flask_login import login_required, current_user  # Importa current_user

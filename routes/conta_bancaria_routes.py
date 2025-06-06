@@ -1,3 +1,4 @@
+# routes/conta_bancaria_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.conta_bancaria_model import ContaBancaria
 from psycopg.errors import UniqueViolation

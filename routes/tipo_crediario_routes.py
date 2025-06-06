@@ -1,3 +1,4 @@
+# routes/tipo_crediario_routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.tipo_crediario_model import TipoCrediario
 from flask_login import login_required, current_user

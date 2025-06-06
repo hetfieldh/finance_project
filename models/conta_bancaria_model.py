@@ -1,3 +1,4 @@
+# models/conta_bancaria_model.py
 from database.db_manager import execute_query, get_db_cursor
 from psycopg.errors import UniqueViolation
 

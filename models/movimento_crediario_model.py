@@ -1,3 +1,4 @@
+# models/movimento_crediario_model.py
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 from database.db_manager import execute_query
