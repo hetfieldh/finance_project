@@ -11,7 +11,6 @@ class TipoCrediario:
 
     @staticmethod
     def create_table():
-        """Cria tabela 'tipos_crediario' se ela não existir."""
         query = """
         CREATE TABLE IF NOT EXISTS tipos_crediario (
             id SERIAL PRIMARY KEY,
@@ -30,7 +29,6 @@ class TipoCrediario:
 
     @staticmethod
     def get_all_for_user(user_id):
-        """Retorna todos os tipos de crediário cadastrados para um usuário específico."""
         query = "SELECT id, user_id, nome_tipo FROM tipos_crediario WHERE user_id = %s ORDER BY nome_tipo ASC;"
         rows = execute_query(query, (user_id,), fetchall=True)
         if rows:
@@ -39,7 +37,6 @@ class TipoCrediario:
 
     @staticmethod
     def get_by_id(tipo_id, user_id):
-        """Retorna um tipo de crediário pelo ID e user_id."""
         query = "SELECT id, user_id, nome_tipo FROM tipos_crediario WHERE id = %s AND user_id = %s;"
         row = execute_query(query, (tipo_id, user_id), fetchone=True)
         if row:
@@ -48,7 +45,6 @@ class TipoCrediario:
 
     @staticmethod
     def add(user_id, nome_tipo):
-        """Adiciona um novo tipo de crediário para um usuário específico."""
         query = "INSERT INTO tipos_crediario (user_id, nome_tipo) VALUES (%s, %s) RETURNING id;"
         try:
             result = execute_query(
@@ -65,7 +61,6 @@ class TipoCrediario:
 
     @staticmethod
     def update(tipo_id, nome_tipo, user_id):
-        """Atualiza um tipo de crediário existente para um usuário específico."""
         query = "UPDATE tipos_crediario SET nome_tipo = %s WHERE id = %s AND user_id = %s;"
         try:
             execute_query(query, (nome_tipo, tipo_id, user_id), commit=True)
@@ -79,7 +74,6 @@ class TipoCrediario:
 
     @staticmethod
     def delete(tipo_id, user_id):
-        """Exclui um tipo de crediário pelo ID e user_id."""
         query = "DELETE FROM tipos_crediario WHERE id = %s AND user_id = %s;"
         execute_query(query, (tipo_id, user_id), commit=True)
         return True

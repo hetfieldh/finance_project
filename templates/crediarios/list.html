@@ -2,10 +2,11 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Crediários{% endblock %}
-{% block header_title %}Gerenciar Crediários{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('crediarios.add_crediario') }}" class="button">Adicionar Novo Crediário</a>
+<h2>Crediários Cadastrados</h2>
+
+<a href="{{ url_for('crediarios.add_crediario') }}" class="button">Adicionar</a>
 
 {% if crediarios %}
 <table>
@@ -28,13 +29,11 @@
             <td>{{ crediario.final }}</td>
             <td>R$ {{ "%.2f" % crediario.limite }}</td>
             <td>
-                {# Botão de EDITAR #}
                 <a href="{{ url_for('crediarios.edit_crediario', crediario_id=crediario.id) }}" class="icon-button edit"
                     title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
 
-                {# Botão de EXCLUIR #}
                 <form action="{{ url_for('crediarios.delete_crediario', crediario_id=crediario.id) }}" method="post"
                     style="display:inline;">
                     <button type="submit" class="icon-button delete" title="Excluir"

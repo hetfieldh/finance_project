@@ -5,7 +5,7 @@
 {% block header_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h2>Registrar Novo Lançamento</h2>
+<h2>Registrar Novo Lançamento Bancário</h2>
 
 <form action="{{ url_for('movimento.mov_lancamento') }}" method="post">
     <label for="conta_id">Conta Bancária (Origem):</label>
@@ -18,7 +18,6 @@
     </select><br><br>
 
     <label for="data">Data:</label>
-    {# IMPORTANTE: Não há 'value="{{ ... }}"' aqui. O JavaScript preenche. #}
     <input type="date" id="data" name="data" required><br><br>
 
     <label for="valor">Valor do Lançamento:</label>
@@ -45,14 +44,12 @@
     </div>
 
     <button type="submit" class="button">Salvar Lançamento</button>
-    <a href="{{ url_for('movimento.index') }}" class="button cancel">Cancelar</a>
 </form>
 
 {% endblock %}
 
 {% block scripts_extra %}
 <script>
-    // Função para preencher a data atual
     function today_date_js() {
         const today = new Date();
         const year = today.getFullYear();
@@ -69,91 +66,80 @@
         const dateInput = document.getElementById('data');
         const valorInput = document.getElementById('valor');
         const descricaoSelect = document.getElementById('descricao');
-        const transacoesOptions = Array.from(descricaoSelect.options).slice(1); // Ignora a primeira opção "Selecione..."
+        const transacoesOptions = Array.from(descricaoSelect.options).slice(1);
 
         const isTransferCheckbox = document.getElementById('is_transfer');
         const targetAccountGroup = document.getElementById('target_account_group');
         const contaDestinoSelect = document.getElementById('conta_destino_id');
         const contaOrigemSelect = document.getElementById('conta_id');
 
-        // Preenche a data atual ao carregar a página
         if (dateInput) {
             dateInput.value = today_date_js();
         }
 
-        // 1. Lógica para filtrar Descrição com base no Valor
         valorInput.addEventListener('input', function () {
             const valor = parseFloat(this.value.replace(',', '.'));
 
-            // Se o valor não for um número ou for 0, mostra todas as opções
             if (isNaN(valor) || valor === 0) {
                 transacoesOptions.forEach(option => option.style.display = '');
-                descricaoSelect.value = ''; // Limpa a seleção
-                descricaoSelect.required = true; // Volta a ser obrigatório
+                descricaoSelect.value = '';
+                descricaoSelect.required = true;
                 return;
             }
 
             const tipoDesejado = valor > 0 ? 'Entrada' : 'Saída';
 
             transacoesOptions.forEach(option => {
-                const tipoTransacao = option.dataset.tipo; // Pega o valor do data-tipo
+                const tipoTransacao = option.dataset.tipo;
                 if (tipoTransacao === tipoDesejado) {
-                    option.style.display = ''; // Mostra a opção
+                    option.style.display = '';
                 } else {
-                    option.style.display = 'none'; // Oculta a opção
+                    option.style.display = 'none';
                 }
             });
 
-            // Se a opção selecionada for oculta, limpa a seleção
             if (descricaoSelect.selectedOptions[0] && descricaoSelect.selectedOptions[0].style.display === 'none') {
                 descricaoSelect.value = '';
             }
-            descricaoSelect.required = true; // Garante que é obrigatório
+            descricaoSelect.required = true;
         });
 
-        // 2. Lógica para Transferência Inter Contas
         isTransferCheckbox.addEventListener('change', function () {
             if (this.checked) {
                 targetAccountGroup.style.display = 'block';
-                contaDestinoSelect.required = true; // Torna obrigatório
-                descricaoSelect.required = false; // Descrição não é obrigatória para transferência
-                descricaoSelect.value = ''; // Limpa a seleção da descrição
-                valorInput.value = Math.abs(parseFloat(valorInput.value.replace(',', '.')) || 0); // Garante valor positivo para transferência
+                contaDestinoSelect.required = true;
+                descricaoSelect.required = false;
+                descricaoSelect.value = '';
+                valorInput.value = Math.abs(parseFloat(valorInput.value.replace(',', '.')) || 0);
 
-                // Opcional: Tentar pré-selecionar uma transação de "Transferência"
                 const transferOption = transacoesOptions.find(opt => opt.value.toLowerCase().includes('transferencia'));
                 if (transferOption) {
                     descricaoSelect.value = transferOption.value;
                 } else {
-                    // Se não houver, pode deixar vazio ou exibir uma mensagem
-                    // console.warn("Tipo de transação 'Transferência' não encontrado. Por favor, cadastre um.");
+                    console.warn("Tipo de transação 'Transferência' não encontrado. Por favor, cadastre um.");
                 }
 
             } else {
                 targetAccountGroup.style.display = 'none';
                 contaDestinoSelect.required = false;
-                contaDestinoSelect.value = ''; // Limpa a seleção da conta destino
-                descricaoSelect.required = true; // Volta a ser obrigatório
+                contaDestinoSelect.value = '';
+                descricaoSelect.required = true;
             }
-            filterTargetAccounts(); // Atualiza as opções da conta destino
+            filterTargetAccounts();
         });
 
-        // 3. Lógica para filtrar Conta Destino com base na Conta Origem
         contaOrigemSelect.addEventListener('change', filterTargetAccounts);
 
         function filterTargetAccounts() {
             const selectedOriginAccountId = contaOrigemSelect.value;
-            // Limpa as opções atuais da conta destino (exceto a primeira "Selecione...")
             while (contaDestinoSelect.options.length > 1) {
                 contaDestinoSelect.remove(1);
             }
 
             if (isTransferCheckbox.checked && selectedOriginAccountId) {
-                // allAccountsData é passado do Python para o JS
                 const allAccountsData = JSON.parse('{{ contas | tojson | safe }}');
 
                 allAccountsData.forEach(conta => {
-                    // Compara como string para garantir que a comparação de IDs seja correta (um pode ser number, outro string)
                     if (String(conta.id) !== String(selectedOriginAccountId)) {
                         const option = document.createElement('option');
                         option.value = conta.id;
@@ -164,12 +150,10 @@
             }
         }
 
-        // Inicializa o filtro da descrição ao carregar a página (se já houver valor)
         if (valorInput.value) {
-            valorInput.dispatchEvent(new Event('input')); // Dispara o evento 'input' para filtrar
+            valorInput.dispatchEvent(new Event('input'));
         }
 
-        // Inicializa o filtro da conta destino ao carregar a página (se o checkbox estiver marcado)
         if (isTransferCheckbox.checked) {
             filterTargetAccounts();
         }

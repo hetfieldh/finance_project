@@ -2,9 +2,9 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Transações{% endblock %}
-{% block header_title %}Adicionar Novo Tipo de Transação{% endblock %}
 
 {% block content %}
+<h2>Adicionar Nova Transação</h2>
 <form action="{{ url_for('transacoes.add_transacao') }}" method="post">
     <label for="transacao">Nome da Transação:</label>
     <input type="text" id="transacao" name="transacao" maxlength="100" required><br><br>

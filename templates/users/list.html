@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Usuários{% endblock %}
-{% block header_title %}Gerenciar Usuários{% endblock %}
+
 
 {% block content %}
 <h2>Usuários Cadastrados</h2>
@@ -12,7 +12,7 @@
 {% endif %}
 
 {% if current_user.is_admin %}
-<p><a href="{{ url_for('users.add_user') }}" class="button">Adicionar Novo Usuário</a></p>
+<p><a href="{{ url_for('users.add_user') }}" class="button">Adicionar</a></p>
 {% endif %}
 
 {% if users %}

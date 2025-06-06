@@ -41,7 +41,6 @@ class ContaBancaria:
 
     @staticmethod
     def get_all():
-        """Retorna todas as contas bancárias do banco de dados (sem filtro de usuário)."""
         query = "SELECT id, user_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, saldo_atual, limite_credito FROM contas_bancarias ORDER BY nome_banco ASC, tipo_conta ASC;"
         rows = execute_query(query, fetchall=True)
         if rows:
@@ -50,7 +49,6 @@ class ContaBancaria:
 
     @staticmethod
     def get_all_for_user(user_id):
-        """Retorna todas as contas bancárias de um usuário específico."""
         query = "SELECT id, user_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, saldo_atual, limite_credito FROM contas_bancarias WHERE user_id = %s ORDER BY nome_banco ASC, tipo_conta ASC;"
         rows = execute_query(query, (user_id,), fetchall=True)
         if rows:
@@ -59,7 +57,6 @@ class ContaBancaria:
 
     @staticmethod
     def get_by_id(conta_id):
-        """Retorna uma conta bancária pelo ID."""
         query = "SELECT id, user_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, saldo_atual, limite_credito FROM contas_bancarias WHERE id = %s;"
         row = execute_query(query, (conta_id,), fetchone=True)
         if row:
@@ -68,7 +65,6 @@ class ContaBancaria:
 
     @staticmethod
     def add(user_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, limite_credito=None):
-        """Adiciona uma nova conta bancária ao banco de dados."""
         query = """
         INSERT INTO contas_bancarias (user_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, saldo_atual, limite_credito)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
@@ -81,7 +77,6 @@ class ContaBancaria:
 
     @staticmethod
     def update(conta_id, nome_banco, agencia, numero_conta, tipo_conta, saldo_inicial, saldo_atual, limite_credito):
-        """Atualiza uma conta bancária existente. saldo_atual e limite_credito são atualizáveis."""
         query = """
         UPDATE contas_bancarias SET
         nome_banco = %s, agencia = %s, numero_conta = %s, tipo_conta = %s, saldo_inicial = %s, saldo_atual = %s, limite_credito = %s
@@ -93,17 +88,12 @@ class ContaBancaria:
 
     @staticmethod
     def delete(conta_id):
-        """Exclui uma conta bancária pelo ID."""
         query = "DELETE FROM contas_bancarias WHERE id = %s;"
         execute_query(query, (conta_id,), commit=True)
         return True
 
     @staticmethod
     def _adjust_balance(conta_id, valor_ajuste):
-        """
-        Método auxiliar para ajustar o saldo atual de uma conta bancária.
-        Usado internamente por MovimentoBancario para manter a consistência.
-        """
         query = """
         UPDATE contas_bancarias
         SET saldo_atual = saldo_atual + %s

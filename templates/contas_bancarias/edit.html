@@ -2,51 +2,44 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
-{% block header_title %}Editar Conta Bancária{% endblock %}
 
 {% block content %}
+<h2>Editar Conta Bancária</h2>
 <form action="{{ url_for('contas_bancarias.edit_conta_bancaria', conta_id=conta.id) }}" method="post"
     onsubmit="return formatBeforeSubmit()">
     <label for="nome_banco">Nome do Banco:</label>
-    {# Mantido 'readonly' para campos de texto que não devem ser editados mas precisam ser enviados #}
     <input type="text" id="nome_banco" name="nome_banco" value="{{ conta.nome_banco }}" maxlength="100" required
         readonly><br><br>
 
     <label for="tipo_conta">Tipo:</label>
-    {# O select é 'disabled' para impedir interação do usuário #}
-    <select id="tipo_conta" name="tipo_conta_display" required disabled> {# Nome diferente para o select disabled #}
+
+    <select id="tipo_conta" name="tipo_conta_display" required disabled>
         <option value="">Selecione um tipo</option>
         {% for tipo_opcao in tipos_conta %}
         <option value="{{ tipo_opcao }}" {% if tipo_opcao==conta.tipo_conta %}selected{% endif %}>{{ tipo_opcao }}
         </option>
         {% endfor %}
     </select><br><br>
-    {# Adicionado um campo hidden com o nome correto para enviar o valor ao servidor #}
     <input type="hidden" name="tipo_conta" value="{{ conta.tipo_conta }}">
 
     <label for="agencia">Agência (4 dígitos):</label>
-    {# Mantido 'readonly' #}
     <input type="text" id="agencia" name="agencia" value="{{ '%04d' % conta.agencia }}" pattern="[0-9]{4}"
         title="Deve conter exatamente 4 dígitos numéricos" onblur="formatInput(this, 4)" required readonly><br><br>
 
     <label for="numero_conta">Número da Conta (apenas dígitos, até 50 caracteres):</label>
-    {# Mantido 'readonly' #}
     <input type="text" id="numero_conta" name="numero_conta" value="{{ conta.numero_conta }}" pattern="[0-9]{1,50}"
         title="Deve conter apenas dígitos, entre 1 e 50 caracteres." onblur="formatInput(this, 50)" required
         readonly><br><br>
 
     <label for="saldo_inicial">Saldo Inicial:</label>
-    {# Mantido 'readonly' #}
     <input type="number" id="saldo_inicial" name="saldo_inicial" value="{{ '%.2f' % conta.saldo_inicial }}" step="0.01"
         readonly><br><br>
 
     <label for="saldo_atual">Saldo Atual:</label>
-    {# Mantido 'readonly' #}
     <input type="number" id="saldo_atual" name="saldo_atual" value="{{ '%.2f' % conta.saldo_atual }}" step="0.01"
         readonly><br><br>
 
     <label for="limite_credito">Limite de Crédito (Opcional):</label>
-    {# Este campo continua editável #}
     <input type="number" id="limite_credito" name="limite_credito"
         value="{{ '%.2f' % conta.limite_credito if conta.limite_credito is not none else '' }}" step="0.01"><br><br>
 

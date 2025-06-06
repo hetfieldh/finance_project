@@ -2,10 +2,11 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
-{% block header_title %}Gerenciar Contas Bancárias{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar Nova Conta Bancária</a>
+<h2>Contas Bancárias Cadastradas</h2>
+
+<a href="{{ url_for('contas_bancarias.add_conta_bancaria') }}" class="button">Adicionar</a>
 
 {% if contas %}
 <table>
@@ -48,13 +49,11 @@
                 {% endif %}
             </td>
             <td>
-                {# Botão de EDITAR #}
                 <a href="{{ url_for('contas_bancarias.edit_conta_bancaria', conta_id=conta.id) }}"
                     class="icon-button edit" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
 
-                {# Botão de EXCLUIR #}
                 <form action="{{ url_for('contas_bancarias.delete_conta_bancaria', conta_id=conta.id) }}" method="post"
                     style="display:inline;">
                     <button type="submit" class="icon-button delete" title="Excluir"

@@ -66,14 +66,8 @@ def execute_query(query, params=None, fetchone=False, fetchall=False, commit=Fal
 
 
 def check_and_update_table_constraints():
-    """
-    Verifica e atualiza as constraints das tabelas, incluindo colunas faltantes.
-    Imprime mensagens APENAS se uma alteração for feita ou um erro ocorrer.
-    """
     try:
         with get_db_cursor(commit=True) as cursor:
-            # --- users table ---
-            # Verifica e adiciona a coluna 'password_hash' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'password_hash';
@@ -84,7 +78,6 @@ def check_and_update_table_constraints():
                     "ALTER TABLE users ADD COLUMN password_hash VARCHAR(255);")
                 print("Coluna 'password_hash' adicionada à tabela 'users'.")
 
-            # Verifica e adiciona a coluna 'is_active' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'is_active';
@@ -95,7 +88,6 @@ def check_and_update_table_constraints():
                     "ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE;")
                 print("Coluna 'is_active' adicionada à tabela 'users'.")
 
-            # Verifica e adiciona a coluna 'is_admin' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'is_admin';
@@ -106,8 +98,6 @@ def check_and_update_table_constraints():
                     "ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;")
                 print("Coluna 'is_admin' adicionada à tabela 'users'.")
 
-            # --- contas_bancarias table ---
-            # Verifica e adiciona a coluna 'saldo_atual' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'contas_bancarias' AND column_name = 'saldo_atual';
@@ -118,7 +108,6 @@ def check_and_update_table_constraints():
                     "ALTER TABLE contas_bancarias ADD COLUMN NUMERIC(15, 2) NOT NULL DEFAULT 0.0;")
                 print("Coluna 'saldo_atual' adicionada à tabela 'contas_bancarias'.")
 
-            # Verifica e adiciona a coluna 'limite_credito' se necessário
             cursor.execute("""
                 SELECT column_name FROM information_schema.columns
                 WHERE table_schema = 'public' AND table_name = 'contas_bancarias' AND column_name = 'limite_credito';
@@ -130,9 +119,6 @@ def check_and_update_table_constraints():
                     "ALTER TABLE contas_bancarias ADD COLUMN limite_credito NUMERIC(15, 2) NULL;")
                 print("Coluna 'limite_credito' adicionada à tabela 'contas_bancarias'.")
 
-            # --- tipos_crediario table ---
-            # Verifica e adiciona a coluna 'user_id' e a constraint UNIQUE se necessário
-            # Primeiro, verifica se a tabela 'tipos_crediario' existe para evitar UndefinedTable
             cursor.execute("""
                 SELECT EXISTS (
                     SELECT FROM information_schema.tables

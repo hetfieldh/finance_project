@@ -2,8 +2,9 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas Bancárias{% endblock %}
-{% block header_title %}Adicionar Nova Conta Bancária{% endblock %}
+
 {% block content %}
+<h2>Adicionar Nova Conta Bancária</h2>
 <form action="{{ url_for('contas_bancarias.add_conta_bancaria') }}" method="post"
     onsubmit="return formatBeforeSubmit()">
     <label for="nome_banco">Nome do Banco:</label>

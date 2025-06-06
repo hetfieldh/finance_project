@@ -34,27 +34,22 @@ class Crediario:
 
     @staticmethod
     def get_all_for_user(user_id):
-        """Retorna todos os crediários de um usuário específico."""
         query = "SELECT id, crediario, tipo, final, limite, user_id FROM crediarios WHERE user_id = %s ORDER BY crediario ASC;"
         rows = execute_query(query, (user_id,), fetchall=True)
         if rows:
-            # Garante que os valores numéricos sejam floats e passa o user_id
             return [Crediario(row[0], row[1], row[2], row[3], float(row[4]), row[5]) for row in rows]
         return []
 
     @staticmethod
     def get_by_id(crediario_id, user_id):
-        """Retorna um crediário pelo ID e pelo user_id."""
         query = "SELECT id, crediario, tipo, final, limite, user_id FROM crediarios WHERE id = %s AND user_id = %s;"
         row = execute_query(query, (crediario_id, user_id), fetchone=True)
         if row:
-            # Garante que os valores numéricos sejam floats e passa o user_id
             return Crediario(row[0], row[1], row[2], row[3], float(row[4]), row[5])
         return None
 
     @staticmethod
     def add(crediario, tipo, final, limite, user_id):
-        """Adiciona um novo crediário ao banco de dados para um usuário específico."""
         query = "INSERT INTO crediarios (crediario, tipo, final, limite, user_id) VALUES (%s, %s, %s, %s, %s) RETURNING id;"
         try:
             result = execute_query(
@@ -71,12 +66,10 @@ class Crediario:
 
     @staticmethod
     def update(crediario_id, crediario_val, tipo, final, limite, user_id):
-        """Atualiza um crediário existente para um usuário específico."""
         query = "UPDATE crediarios SET crediario = %s, tipo = %s, final = %s, limite = %s WHERE id = %s AND user_id = %s;"
         try:
             execute_query(query, (crediario_val, tipo, final,
                           limite, crediario_id, user_id), commit=True)
-            # Busca novamente para retornar o objeto atualizado
             return Crediario.get_by_id(crediario_id, user_id)
         except UniqueViolation:
             raise ValueError(
@@ -87,7 +80,6 @@ class Crediario:
 
     @staticmethod
     def delete(crediario_id, user_id):
-        """Exclui um crediário pelo ID e pelo user_id."""
         query = "DELETE FROM crediarios WHERE id = %s AND user_id = %s;"
         execute_query(query, (crediario_id, user_id), commit=True)
         return True

@@ -3,7 +3,6 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import date
 
-# Importa os modelos necessários
 from models.movimento_crediario_model import MovimentoCrediario
 from models.grupo_crediario_model import GrupoCrediario
 from models.crediario_model import Crediario
@@ -83,7 +82,6 @@ def add_movimento_crediario():
         except Exception as e:
             print(f"Erro inesperado ao adicionar movimento de crediário: {e}")
             flash('Ocorreu um erro inesperado ao adicionar o movimento.', 'danger')
-            # Renderiza o formulário com os valores padrão e a mensagem de erro
             return render_template(
                 'movimento_crediario/add.html',
                 grupos_crediario=grupos_crediario,
@@ -112,7 +110,6 @@ def edit_movimento_crediario(movimento_id):
     grupos_crediario = GrupoCrediario.get_all_for_user(current_user.id)
     crediarios_disponiveis = Crediario.get_all_for_user(current_user.id)
 
-    # Obtenha a data atual formatada para o input type="date" e "month"
     today_date_str = date.today().isoformat()
     current_month_str = date.today().strftime('%Y-%m')
 
@@ -138,7 +135,6 @@ def edit_movimento_crediario(movimento_id):
             )
         try:
             data_compra = date.fromisoformat(data_compra_str)
-            # Para primeira_parcela, assuma o dia 1 do mês selecionado
             primeira_parcela = date.fromisoformat(primeira_parcela_str + '-01')
             valor_total = float(valor_total_str)
             num_parcelas = int(num_parcelas_str)
@@ -163,7 +159,6 @@ def edit_movimento_crediario(movimento_id):
             return redirect(url_for('movimento_crediario.list_movimentos_crediario'))
         except ValueError as e:
             flash(f'Erro de validação: {e}', 'danger')
-            # Renderiza o formulário com os valores padrão e a mensagem de erro
             return render_template(
                 'movimento_crediario/edit.html',
                 movimento=movimento,
@@ -175,7 +170,6 @@ def edit_movimento_crediario(movimento_id):
         except Exception as e:
             print(f"Erro inesperado ao atualizar movimento de crediário: {e}")
             flash('Ocorreu um erro inesperado ao atualizar o movimento.', 'danger')
-            # Renderiza o formulário com os valores padrão e a mensagem de erro
             return render_template(
                 'movimento_crediario/edit.html',
                 movimento=movimento,

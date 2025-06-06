@@ -11,7 +11,6 @@
     <form method="POST" action="{{ url_for('movimento_crediario.add_movimento_crediario') }}">
         <div class="form-group">
             <label for="data_compra">Data da Compra:</label>
-            {# AQUI ESTÁ A CORREÇÃO: Usar a variável 'today_date_str' passada da rota #}
             <input type="date" id="data_compra" name="data_compra" required value="{{ today_date_str }}">
         </div>
         <div class="form-group">
@@ -46,12 +45,11 @@
         </div>
         <div class="form-group">
             <label for="primeira_parcela">Primeira Parcela (Mês/Ano):</label>
-            {# AQUI ESTÁ A CORREÇÃO: Usar a variável 'current_month_str' passada da rota #}
             <input type="month" id="primeira_parcela" name="primeira_parcela" required value="{{ current_month_str }}">
         </div>
 
-        <button type="submit" class="btn btn-primary">Salvar Movimento</button>
-        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}" class="button cancel">Cancelar</a>
     </form>
 </div>
 {% endblock %}

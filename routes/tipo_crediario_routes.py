@@ -11,7 +11,6 @@ tipo_crediario_bp = Blueprint(
 @tipo_crediario_bp.route('/')
 @login_required
 def list_tipos_crediario():
-    """Lista todos os tipos de crediário para o usuário logado."""
     tipos = TipoCrediario.get_all_for_user(current_user.id)
     return render_template('tipos_crediario/list.html', tipos=tipos)
 
@@ -19,10 +18,8 @@ def list_tipos_crediario():
 @tipo_crediario_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_tipo_crediario():
-    """Adiciona um novo tipo de crediário."""
     if request.method == 'POST':
         nome_tipo = request.form['nome_tipo'].strip()
-        # Captura o URL de onde a requisição veio, se disponível
         next_url = request.form.get('next_url') or url_for(
             'tipos_crediario.list_tipos_crediario')
 
@@ -34,7 +31,6 @@ def add_tipo_crediario():
             TipoCrediario.add(current_user.id, nome_tipo)
             flash(
                 f'Tipo de crediário "{nome_tipo}" adicionado com sucesso!', 'success')
-            # Redireciona para o URL de onde veio, ou para a lista de tipos de crediário
             return redirect(next_url)
         except ValueError as e:
             flash(f'Erro ao adicionar tipo de crediário: {e}', 'danger')
@@ -49,7 +45,6 @@ def add_tipo_crediario():
 @tipo_crediario_bp.route('/edit/<int:tipo_id>', methods=['GET', 'POST'])
 @login_required
 def edit_tipo_crediario(tipo_id):
-    """Edita um tipo de crediário existente."""
     tipo = TipoCrediario.get_by_id(tipo_id, current_user.id)
     if not tipo:
         flash('Tipo de crediário não encontrado ou você não tem permissão para editá-lo.', 'danger')
@@ -80,7 +75,6 @@ def edit_tipo_crediario(tipo_id):
 @tipo_crediario_bp.route('/delete/<int:tipo_id>', methods=['POST'])
 @login_required
 def delete_tipo_crediario(tipo_id):
-    """Exclui um tipo de crediário."""
     tipo = TipoCrediario.get_by_id(tipo_id, current_user.id)
     if not tipo:
         flash('Tipo de crediário não encontrado ou você não tem permissão para excluí-lo.', 'danger')

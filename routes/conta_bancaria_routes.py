@@ -10,8 +10,6 @@ conta_bancaria_bp = Blueprint(
 TIPOS_CONTA = ["Corrente", "Poupança", "Investimento",
                "Digital", "Restituições", "Vendas", "Serviços", "Outros"]
 
-# --- Funções Auxiliares de Validação e Formatação (Back-end) ---
-
 
 def format_and_validate_agencia(agencia_str):
     agencia_str = agencia_str.replace(" ", "").strip()
@@ -29,8 +27,6 @@ def format_and_validate_numero_conta(numero_conta_str):
     if not (1 <= len(numero_conta_str) <= 50):
         return None, "Número da Conta deve ter entre 1 e 50 dígitos."
     return numero_conta_str, None
-
-# --- Rotas ---
 
 
 @conta_bancaria_bp.route('/')
@@ -113,15 +109,11 @@ def edit_conta_bancaria(conta_id):
         return redirect(url_for('contas_bancarias.list_contas_bancarias'))
 
     if request.method == 'POST':
-        # Esta parte do código é executada APENAS quando o formulário é SUBMETIDO.
-        # Os valores aqui vêm do `request.form`, que são os valores que o usuário digitou/enviou.
         nome_banco = request.form['nome_banco']
         agencia = request.form['agencia']
         numero_conta = request.form['numero_conta']
         tipo_conta = request.form['tipo_conta']
-        # Este valor virá do formulário (disabled)
         saldo_inicial = request.form['saldo_inicial']
-        # Este valor virá do formulário (disabled)
         saldo_atual = request.form['saldo_atual']
         limite_credito = request.form.get('limite_credito')
 
@@ -154,7 +146,6 @@ def edit_conta_bancaria(conta_id):
                 flash('Nome do Banco deve ter no máximo 100 caracteres.', 'warning')
                 return render_template('contas_bancarias/edit.html', conta=conta, tipos_conta=TIPOS_CONTA)
 
-            # Chame o método update do seu modelo ContaBancaria
             updated_conta = ContaBancaria.update(
                 conta_id, nome_banco, agencia_val, numero_conta_val, tipo_conta,
                 saldo_inicial_float, saldo_atual_float, limite_credito_float
@@ -175,7 +166,6 @@ def edit_conta_bancaria(conta_id):
             flash(
                 'Ocorreu um erro inesperado ao atualizar a conta. Verifique os logs do servidor.', 'danger')
 
-    # Esta parte do código é executada quando a página é carregada pela primeira vez (GET request)
     return render_template('contas_bancarias/edit.html', conta=conta, tipos_conta=TIPOS_CONTA)
 
 

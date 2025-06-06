@@ -2,9 +2,9 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas a Pagar{% endblock %}
-{% block header_title %}Editar Conta{% endblock %}
 
 {% block content %}
+<h2>Editar Conta a Pagar</h2>
 <form action="{{ url_for('contas_pagar.edit_conta_pagar', conta_id=conta_pagar.id) }}" method="post">
     <label for="conta">Conta:</label>
     <input type="text" id="conta" name="conta" value="{{ conta_pagar.conta }}" required><br><br>

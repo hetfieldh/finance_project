@@ -2,10 +2,11 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Transações{% endblock %}
-{% block header_title %}Gerenciar Tipos de Transação{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('transacoes.add_transacao') }}" class="button">Adicionar Nova Transação</a>
+<h2>Transações Cadastradas</h2>
+
+<a href="{{ url_for('transacoes.add_transacao') }}" class="button">Adicionar</a>
 
 {% if transacoes %}
 <table>

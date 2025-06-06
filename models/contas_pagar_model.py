@@ -31,7 +31,6 @@ class ContasPagar:
 
     @staticmethod
     def get_all_for_user(user_id):
-        """Retorna todas as contas do banco de dados para um usuário específico."""
         query = "SELECT id, conta, tipo, user_id FROM contas_pagar WHERE user_id = %s ORDER BY tipo DESC, conta ASC;"
         rows = execute_query(query, (user_id,), fetchall=True)
         if rows:
@@ -40,7 +39,6 @@ class ContasPagar:
 
     @staticmethod
     def get_by_id(conta_id, user_id):
-        """Retorna uma conta pelo ID e user_id."""
         query = "SELECT id, conta, tipo, user_id FROM contas_pagar WHERE id = %s AND user_id = %s;"
         row = execute_query(query, (conta_id, user_id), fetchone=True)
         if row:
@@ -49,7 +47,6 @@ class ContasPagar:
 
     @staticmethod
     def add(conta, tipo, user_id):
-        """Adiciona uma nova conta ao banco de dados para um usuário específico."""
         if tipo not in ('Receita', 'Despesa'):
             raise ValueError(
                 "Tipo de conta inválido. Deve ser 'Receita' ou 'Despesa'.")
@@ -69,7 +66,6 @@ class ContasPagar:
 
     @staticmethod
     def update(conta_id, conta_val, tipo, user_id):
-        """Atualiza uma conta existente para um usuário específico."""
         if tipo not in ('Receita', 'Despesa'):
             raise ValueError(
                 "Tipo de conta inválido. Deve ser 'Receita' ou 'Despesa'.")
@@ -77,7 +73,6 @@ class ContasPagar:
         try:
             execute_query(
                 query, (conta_val, tipo, conta_id, user_id), commit=True)
-            # Busca usando user_id
             return ContasPagar.get_by_id(conta_id, user_id)
         except UniqueViolation:
             raise ValueError(
@@ -88,7 +83,6 @@ class ContasPagar:
 
     @staticmethod
     def delete(conta_id, user_id):
-        """Exclui uma conta pelo ID e user_id."""
         query = "DELETE FROM contas_pagar WHERE id = %s AND user_id = %s;"
         execute_query(query, (conta_id, user_id), commit=True)
         return True

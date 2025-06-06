@@ -10,7 +10,6 @@
     <input type="hidden" name="id" value="{{ crediario.id }}">
 
     <label for="crediario">Nome do Crediário:</label>
-    {# ESTA É A LINHA CRÍTICA PARA EXIBIR O NOME EXISTENTE #}
     <input type="text" id="crediario" name="crediario" value="{{ crediario.crediario }}" maxlength="100"
         required><br><br>
 
@@ -22,20 +21,14 @@
             tipo_item.nome_tipo }}</option>
         {% endfor %}
     </select>
-    {# Botão para abrir o modal de cadastro de tipo (se necessário, pode ser removido se não fizer sentido na edição) #}
     <button type="button" class="button" id="openAddTipoModal">Cadastrar Novo Tipo de Crediário</button>
     <br><br>
 
-    {# Campo 'final' ajustado: type="text", maxlength="4", inputmode="numeric", pattern="[0-9]*", e oninput para
-    validação #}
     <div class="mb-3">
         <label for="final" class="form-label">Final (Últimos dígitos do cartão/documento):</label>
-        <input type="text" {# Alterado de type="number" para type="text" para melhor controle com maxlength e oninput #}
-            id="final" name="final" class="form-control" value="{{ crediario.final }}" {# Preenche com o valor existente
-            do crediário #} maxlength="4" {# Limita a entrada a 4 caracteres #} inputmode="numeric" {# Sugere ao
-            navegador um teclado numérico em dispositivos móveis #} pattern="[0-9]*" {# Garante que apenas dígitos de
-            0-9 sejam considerados válidos #} oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);" {#
-            Remove caracteres não numéricos e limita a 4 dígitos #} required>
+        <input type="text" id="final" name="final" class="form-control" value="{{ crediario.final }}" maxlength="4"
+            inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);"
+            required>
         <div class="form-text">Digite os 4 últimos dígitos do cartão/documento.</div>
     </div>
     <br>
@@ -47,7 +40,6 @@
     <a href="{{ url_for('crediarios.list_crediarios') }}" class="button cancel">Cancelar</a>
 </form>
 
-{# O MODAL PARA ADICIONAR TIPO DE CREDIÁRIO (se você deseja mantê-lo na tela de edição) #}
 <div id="addTipoModal" class="modal">
     <div class="modal-content">
         <span class="close-button">&times;</span>
@@ -56,15 +48,13 @@
             <label for="modal_nome_tipo">Nome do Tipo de Crediário:</label>
             <input type="text" id="modal_nome_tipo" name="nome_tipo" maxlength="100" required><br><br>
 
-            {# Campo oculto para indicar o URL de retorno após o POST #}
-            {# O next_url deve apontar de volta para a rota de edição do crediário #}
             <input type="hidden" name="next_url"
                 value="{{ url_for('crediarios.edit_crediario', crediario_id=crediario.id) }}">
 
             <button type="submit" class="button">Adicionar Tipo</button>
             <button type="button" class="button cancel" id="cancelAddTipo">Cancelar</button>
         </form>
-        <div id="modal-messages" class="flashes"></div> {# Para mensagens flash dentro do modal #}
+        <div id="modal-messages" class="flashes"></div>
     </div>
 </div>
 
@@ -73,17 +63,14 @@
 {% block scripts_extra %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const crediarioEditForm = document.getElementById('crediarioEditForm'); // Referência ao formulário principal
-        const finalInput = document.getElementById('final'); // Referência ao campo 'final'
+        const crediarioEditForm = document.getElementById('crediarioEditForm');
+        const finalInput = document.getElementById('final');
 
-        // Lógica para preencher o campo 'final' com zeros à esquerda antes do submit
         crediarioEditForm.addEventListener('submit', function (event) {
             let finalValue = finalInput.value;
-            // Preenche com zeros à esquerda até ter 4 dígitos
             finalInput.value = finalValue.padStart(4, '0');
         });
 
-        // Lógica do Modal (copiada do add.html, se você mantiver o modal na edição)
         const modal = document.getElementById('addTipoModal');
         const openModalBtn = document.getElementById('openAddTipoModal');
         const closeButton = modal.querySelector('.close-button');
@@ -92,14 +79,12 @@
         const tipoSelect = document.getElementById('tipo');
         const modalMessages = document.getElementById('modal-messages');
 
-        // Função para abrir o modal
         openModalBtn.onclick = function () {
             modal.style.display = 'block';
-            modalMessages.innerHTML = ''; // Limpa mensagens anteriores
-            document.getElementById('modal_nome_tipo').value = ''; // Limpa o campo de input
+            modalMessages.innerHTML = '';
+            document.getElementById('modal_nome_tipo').value = '';
         }
 
-        // Função para fechar o modal
         closeButton.onclick = function () {
             modal.style.display = 'none';
         }
@@ -108,16 +93,14 @@
             modal.style.display = 'none';
         }
 
-        // Fechar o modal se clicar fora dele
         window.onclick = function (event) {
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
         }
 
-        // Lidar com o envio do formulário do modal via AJAX
         addTipoForm.addEventListener('submit', function (event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
+            event.preventDefault();
 
             const formData = new FormData(addTipoForm);
             const nomeTipo = formData.get('nome_tipo');
@@ -126,58 +109,50 @@
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.text()) // Pega o texto da resposta (incluindo flashes)
+                .then(response => response.text())
                 .then(html => {
-                    // Cria um elemento temporário para parsear o HTML e extrair as mensagens flash
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = html;
                     const newFlashes = tempDiv.querySelector('.flashes');
 
-                    modalMessages.innerHTML = ''; // Limpa mensagens anteriores
+                    modalMessages.innerHTML = '';
                     if (newFlashes) {
-                        modalMessages.innerHTML = newFlashes.innerHTML; // Adiciona as novas mensagens
+                        modalMessages.innerHTML = newFlashes.innerHTML;
                     }
 
-                    // Verifica se a adição foi bem-sucedida (pode ser pela presença de 'success' na mensagem flash)
-                    if (html.includes('success')) { // Uma forma simples de verificar sucesso
+                    if (html.includes('success')) {
                         console.log('Tipo de crediário adicionado com sucesso via AJAX.');
-                        // Recarrega os tipos no select principal
-                        fetch('/tipos_crediario/') // Rota para listar todos os tipos
+                        fetch('/tipos_crediario/')
                             .then(response => response.text())
                             .then(listHtml => {
-                                console.log('HTML retornado para tipos_crediario/:', listHtml); // LOG: Verifique o HTML retornado
+                                console.log('HTML retornado para tipos_crediario/:', listHtml);
                                 const parser = new DOMParser();
                                 const doc = parser.parseFromString(listHtml, 'text/html');
 
-                                // Seleciona qualquer linha de tabela dentro do corpo da tabela
                                 const newTipos = doc.querySelectorAll('table tbody tr');
-                                console.log('Linhas de tipos encontradas:', newTipos.length); // LOG: Quantas linhas foram encontradas
+                                console.log('Linhas de tipos encontradas:', newTipos.length);
 
-                                // Limpa as opções existentes (exceto a primeira "Selecione um Tipo")
                                 while (tipoSelect.options.length > 1) {
                                     tipoSelect.remove(1);
                                 }
 
-                                // Adiciona as novas opções
                                 newTipos.forEach(row => {
                                     const id = row.querySelector('td:nth-child(1)') ? row.querySelector('td:nth-child(1)').textContent.trim() : '';
                                     const nome = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.trim() : '';
 
-                                    console.log(`Adicionando opção: ID=${id}, Nome=${nome}`); // LOG: Verifique os dados extraídos
-                                    if (nome) { // Adiciona apenas se o nome não for vazio
+                                    console.log(`Adicionando opção: ID=${id}, Nome=${nome}`);
+                                    if (nome) {
                                         const option = document.createElement('option');
-                                        option.value = nome; // O valor é o nome do tipo
+                                        option.value = nome;
                                         option.textContent = nome;
                                         tipoSelect.appendChild(option);
                                     }
                                 });
 
-                                // Seleciona o tipo recém-adicionado
                                 tipoSelect.value = nomeTipo;
-                                console.log('Tipo selecionado após recarga:', tipoSelect.value); // LOG: Verifique o tipo selecionado
-                                modal.style.display = 'none'; // Fecha o modal
-                                // Limpa as mensagens flash após fechar o modal
-                                setTimeout(() => modalMessages.innerHTML = '', 3000); // Limpa após 3 segundos
+                                console.log('Tipo selecionado após recarga:', tipoSelect.value);
+                                modal.style.display = 'none';
+                                setTimeout(() => modalMessages.innerHTML = '', 3000);
                             })
                             .catch(error => {
                                 console.error('Erro ao recarregar tipos de crediário:', error);

@@ -12,7 +12,6 @@
         action="{{ url_for('movimento_crediario.edit_movimento_crediario', movimento_id=movimento.id) }}">
         <div class="form-group">
             <label for="data_compra">Data da Compra:</label>
-            {# Usa o valor existente, ou o dia atual como fallback #}
             <input type="date" id="data_compra" name="data_compra" required
                 value="{{ movimento.data_compra.strftime('%Y-%m-%d') if movimento.data_compra else today_date_str }}">
         </div>
@@ -54,13 +53,12 @@
         </div>
         <div class="form-group">
             <label for="primeira_parcela">Primeira Parcela (Mês/Ano):</label>
-            {# Usa o valor existente, ou o mês atual como fallback #}
             <input type="month" id="primeira_parcela" name="primeira_parcela" required
                 value="{{ movimento.primeira_parcela.strftime('%Y-%m') if movimento.primeira_parcela else current_month_str }}">
         </div>
 
-        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Atualizar</button>
+        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}" class="button cancel">Cancelar</a>
     </form>
 </div>
 {% endblock %}

@@ -1,13 +1,11 @@
 {# templates/grupo_crediario/add.html #}
 {% extends 'base.html' %}
 
-{% block title %}Adicionar Grupo Crediário{% endblock %}
-
-{% block header_title %}Adicionar Grupo Crediário{% endblock %}
+{% block title %}Finanças | Grupos de Crediário{% endblock %}
 
 {% block content %}
 <div class="container form-container">
-    <h2>Adicionar Novo Grupo Crediário</h2>
+    <h2>Adicionar Novo Grupo de Crediário</h2>
     <form method="POST" action="{{ url_for('grupo_crediario.add_grupo_crediario') }}">
         <div class="form-group">
             <label for="grupo">Grupo:</label>
@@ -22,7 +20,7 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Salvar Grupo Crediário</button>
-        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}" class="button cancel">Cancelar</a>
     </form>
 </div>
 {% endblock %}

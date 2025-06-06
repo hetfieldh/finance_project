@@ -34,33 +34,25 @@ class MovimentoBancario:
 
     @staticmethod
     def add(conta_id, data, valor, descricao):
-        """
-        Adiciona um novo movimento bancário e atualiza o saldo da conta.
-        Esta operação é atômica (transacional).
-        """
         try:
-            with get_db_cursor(commit=True) as cursor:  # Transação aqui
+            with get_db_cursor(commit=True) as cursor:
                 conta = ContaBancaria.get_by_id(conta_id)
                 if not conta:
                     raise ValueError("Conta bancária não encontrada.")
 
                 novo_saldo = conta.saldo_atual + valor
 
-                # Validação de saldo (Requisito 2. Validações obrigatórias)
-                if valor < 0:  # Se o lançamento é uma despesa (valor negativo)
+                if valor < 0:
                     if novo_saldo < 0 and (conta.limite_credito is None or abs(novo_saldo) > conta.limite_credito):
-                        # MENSAGEM DE ERRO ALTERADA AQUI
                         raise ValueError(
                             f"Saldo insuficiente na conta [{conta.nome_banco} | {conta.tipo_conta} | {conta.numero_conta}] ou limite de crédito excedido.")
 
-                # 1. Inserir o movimento
                 cursor.execute(
                     'INSERT INTO movimentos_bancarios (conta_id, data, valor, descricao) VALUES (%s, %s, %s, %s) RETURNING id',
                     (conta_id, data, valor, descricao)
                 )
                 movimento_id = cursor.fetchone()[0]
 
-                # 2. Atualizar o saldo da conta
                 cursor.execute(
                     'UPDATE contas_bancarias SET saldo_atual = %s WHERE id = %s',
                     (novo_saldo, conta_id)
@@ -71,46 +63,32 @@ class MovimentoBancario:
 
     @staticmethod
     def transfer(conta_origem_id, conta_destino_id, valor, descricao):
-        """
-        Realiza uma transferência atômica entre duas contas.
-        Insere uma saída na conta de origem e uma entrada na conta de destino.
-        """
         if valor <= 0:
             raise ValueError("O valor da transferência deve ser positivo.")
 
         try:
-            with get_db_cursor(commit=True) as cursor:  # Transação atômica
-                # 1. Lançamento de SAÍDA na conta de origem
-                # Reutilizamos a lógica de validação do add, mas com valor negativo
+            with get_db_cursor(commit=True) as cursor:
                 MovimentoBancario.add_internal(
                     cursor, conta_origem_id, datetime.now().date(), -valor, descricao)
 
-                # 2. Lançamento de ENTRADA na conta de destino
-                # Reutilizamos a lógica de validação do add, mas com valor positivo
                 MovimentoBancario.add_internal(
                     cursor, conta_destino_id, datetime.now().date(), valor, descricao)
 
-                # Se tudo ocorreu bem, o commit será feito pelo context manager
                 return True
         except Exception as e:
-            # A exceção já é relançada pelo get_db_cursor, então apenas a propagamos
             raise e
 
     @staticmethod
     def add_internal(cursor, conta_id, data, valor, descricao):
-        """
-        Método auxiliar para adicionar movimento e atualizar saldo dentro de uma transação existente.
-        Não faz commit nem fecha a conexão.
-        """
         conta = ContaBancaria.get_by_id(
-            conta_id)  # Buscar a conta DENTRO da transação
+            conta_id)
         if not conta:
             raise ValueError(
                 f"Conta bancária com ID {conta_id} não encontrada para lançamento interno.")
 
         novo_saldo = conta.saldo_atual + valor
 
-        if valor < 0:  # Se é uma saída
+        if valor < 0:
             if novo_saldo < 0 and (conta.limite_credito is None or abs(novo_saldo) > conta.limite_credito):
                 raise ValueError(
                     f"Saldo insuficiente na conta [{conta.nome_banco} | {conta.tipo_conta} | {conta.numero_conta}] ou limite de crédito excedido.")
@@ -153,17 +131,12 @@ class MovimentoBancario:
 
     @staticmethod
     def get_by_id(movimento_id):
-        """Retorna um movimento bancário pelo ID."""
         query = 'SELECT id, conta_id, data, valor, descricao FROM movimentos_bancarios WHERE id = %s'
         row = execute_query(query, (movimento_id,), fetchone=True)
         return MovimentoBancario(row[0], row[1], row[2], float(row[3]), row[4]) if row else None
 
     @staticmethod
     def delete(movimento_id, user_id):
-        """
-        Exclui um movimento bancário e reverte o saldo da conta.
-        Esta operação é atômica (transacional) e verifica a posse do movimento.
-        """
         try:
             with get_db_cursor(commit=True) as cursor:
                 movimento = MovimentoBancario.get_by_id(movimento_id)
@@ -175,18 +148,13 @@ class MovimentoBancario:
                     raise ValueError(
                         "Conta não encontrada ou você não tem permissão para esta conta.")
 
-                # Reverter o saldo da conta: subtrair o valor do movimento
-                # Se o movimento era uma entrada (+X), subtraímos X.
-                # Se o movimento era uma saída (-X), subtraímos -X (ou seja, somamos X).
                 novo_saldo = conta.saldo_atual - movimento.valor
 
-                # Atualizar o saldo da conta
                 cursor.execute(
                     'UPDATE contas_bancarias SET saldo_atual = %s WHERE id = %s',
                     (novo_saldo, conta.id)
                 )
 
-                # Excluir o movimento
                 cursor.execute(
                     'DELETE FROM movimentos_bancarios WHERE id = %s',
                     (movimento_id,)

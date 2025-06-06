@@ -6,7 +6,6 @@ from flask_login import login_required, current_user
 grupo_crediario_bp = Blueprint(
     'grupo_crediario', __name__, url_prefix='/grupo_crediario')
 
-# Renomeado para maior clareza, pois são os TIPOS de grupo de crediário
 GRUPO_CREDIARIO_TIPOS = ["Compra", "Estorno"]
 
 
@@ -26,14 +25,10 @@ def add_grupo_crediario():
 
         if not (grupo and tipo):
             flash('Todos os campos são obrigatórios!', 'warning')
-            # Usando o novo nome da constante
             return render_template('grupo_crediario/add.html', tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
-        # Usando o novo nome da constante
         if tipo not in GRUPO_CREDIARIO_TIPOS:
-            flash('Tipo de Grupo de Crediário inválido.',
-                  'warning')  # Ajuste na mensagem
-            # Usando o novo nome da constante
+            flash('Tipo de Grupo de Crediário inválido.', 'warning')
             return render_template('grupo_crediario/add.html', tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
         try:
@@ -46,7 +41,6 @@ def add_grupo_crediario():
             print(f"Erro inesperado ao adicionar o grupo: {e}")
             flash('Ocorreu um erro inesperado ao adicionar o grupo.', 'danger')
 
-    # Usando o novo nome da constante
     return render_template('grupo_crediario/add.html', tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
 
@@ -59,24 +53,19 @@ def edit_grupo_crediario(grupo_id):
         return redirect(url_for('grupo_crediario.list_grupo_crediario'))
 
     if request.method == 'POST':
-        # Renomeado para evitar conflito com a variável 'grupo' do objeto
         grupo_nome = request.form['grupo']
         tipo = request.form['tipo']
 
-        if not (grupo_nome and tipo):  # Usando grupo_nome
+        if not (grupo_nome and tipo):
             flash('Todos os campos são obrigatórios!', 'warning')
-            # Passa o objeto 'grupo' existente para manter os dados preenchidos
             return render_template('grupo_crediario/edit.html', grupo=grupo, tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
-        # Usando o novo nome da constante
         if tipo not in GRUPO_CREDIARIO_TIPOS:
             flash('Tipo de Grupo de Crediário inválido.',
-                  'warning')  # Ajuste na mensagem
-            # Passa o objeto 'grupo' existente
+                  'warning')
             return render_template('grupo_crediario/edit.html', grupo=grupo, tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
         try:
-            # Usando grupo_nome
             GrupoCrediario.update(grupo_id, grupo_nome, tipo, current_user.id)
             flash('Grupo atualizado com sucesso!', 'success')
             return redirect(url_for('grupo_crediario.list_grupo_crediario'))
@@ -86,7 +75,6 @@ def edit_grupo_crediario(grupo_id):
             print(f"Erro inesperado ao atualizar o grupo: {e}")
             flash('Ocorreu um erro inesperado ao atualizar o grupo.', 'danger')
 
-    # Para requisições GET, passa o objeto 'grupo' obtido do banco de dados
     return render_template('grupo_crediario/edit.html', grupo=grupo, tipos_transacao=GRUPO_CREDIARIO_TIPOS)
 
 

@@ -7,9 +7,8 @@
 
 {% block content %}
 <div class="container">
-    <h2>Lista de Movimentos de Crediário</h2>
-    <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}" class="btn btn-add">Adicionar Novo
-        Movimento</a>
+    <h2>Registrar Novo Lançamento em Crediários</h2>
+    <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}" class="button">Adicionar</a>
 
     {% if movimentos %}
     <table class="data-table">
@@ -38,8 +37,8 @@
                 <td>{{ mov.nome_crediario }}</td> {# Exibe o nome do crediário #}
                 <td>R$ {{ "%.2f"|format(mov.valor_total) }}</td>
                 <td>{{ mov.num_parcelas }}</td>
-                <td>{{ mov.primeira_parcela.strftime('%m/%Y') }}</td> {# Exibe apenas mês/ano #}
-                <td>{{ mov.ultima_parcela.strftime('%m/%Y') }}</td> {# Exibe apenas mês/ano #}
+                <td>{{ mov.primeira_parcela.strftime('%m/%Y') }}</td>
+                <td>{{ mov.ultima_parcela.strftime('%m/%Y') }}</td>
                 <td>R$ {{ "%.2f"|format(mov.valor_parcela_mensal) }}</td>
                 <td class="actions">
                     <a href="{{ url_for('movimento_crediario.edit_movimento_crediario', movimento_id=mov.id) }}"

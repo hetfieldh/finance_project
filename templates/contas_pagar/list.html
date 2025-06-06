@@ -2,10 +2,11 @@
 {% extends "base.html" %}
 
 {% block title %}Finanças | Contas a Pagar{% endblock %}
-{% block header_title %}Gerenciar Contas a Pagar{% endblock %}
 
 {% block content %}
-<a href="{{ url_for('contas_pagar.add_contas_pagar') }}" class="button">Adicionar Nova Conta a Pagar</a>
+<h2>Contas a Pagar Cadastradas</h2>
+
+<a href="{{ url_for('contas_pagar.add_contas_pagar') }}" class="button">Adicionar</a>
 
 {% if contas_pagar %}
 <table>
@@ -24,13 +25,11 @@
             <td>{{ conta_pagar.conta }}</td>
             <td>{{ conta_pagar.tipo }}</td>
             <td>
-                {# Botão de EDITAR - CORRIGIDO o endpoint #}
                 <a href="{{ url_for('contas_pagar.edit_conta_pagar', conta_id=conta_pagar.id) }}"
                     class="icon-button edit" title="Editar">
                     <i class="fas fa-edit"></i>
                 </a>
 
-                {# Botão de EXCLUIR - CORRIGIDO o endpoint #}
                 <form action="{{ url_for('contas_pagar.delete_conta_pagar', conta_id=conta_pagar.id) }}" method="post"
                     style="display:inline;">
                     <button type="submit" class="icon-button delete" title="Excluir"

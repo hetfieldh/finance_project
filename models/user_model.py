@@ -32,12 +32,9 @@ class User(UserMixin):
             print(f"ERRO CRÍTICO ao criar/verificar tabela 'users': {e}")
             raise
 
-    # Métodos exigidos pelo Flask-Login
-
     def get_id(self):
         return str(self.id)
 
-    # Métodos para hash e verificação de senha
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

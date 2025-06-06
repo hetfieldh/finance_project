@@ -11,7 +11,6 @@ crediario_bp = Blueprint('crediarios', __name__, url_prefix='/crediarios')
 @crediario_bp.route('/')
 @login_required
 def list_crediarios():
-    """Lista todos os crediários para o usuário logado."""
     crediarios = Crediario.get_all_for_user(current_user.id)
     return render_template('crediarios/list.html', crediarios=crediarios)
 
@@ -19,8 +18,6 @@ def list_crediarios():
 @crediario_bp.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_crediario():
-    """Adiciona um novo crediário."""
-    # Obtém os tipos de crediário cadastrados pelo usuário logado
     tipos_crediario_disponiveis = TipoCrediario.get_all_for_user(
         current_user.id)
 
@@ -34,7 +31,6 @@ def add_crediario():
             flash('Todos os campos são obrigatórios!', 'warning')
             return render_template('crediarios/add.html', tipos_crediario=tipos_crediario_disponiveis)
 
-        # Validação para o campo 'final'
         if not final.isdigit() or len(final) != 4:
             flash('O campo "Final (Últimos dígitos do cartão/documento)" deve conter exatamente 4 dígitos numéricos.', 'danger')
             return render_template('crediarios/add.html', tipos_crediario=tipos_crediario_disponiveis)
@@ -67,20 +63,17 @@ def add_crediario():
 @crediario_bp.route('/edit/<int:crediario_id>', methods=['GET', 'POST'])
 @login_required
 def edit_crediario(crediario_id):
-    """Edita um crediário existente."""
     crediario = Crediario.get_by_id(crediario_id, current_user.id)
 
     if not crediario:
         flash('Crediário não encontrado ou você não tem permissão para editá-lo.', 'danger')
         return redirect(url_for('crediarios.list_crediarios'))
 
-    # Obtém os tipos de crediário cadastrados pelo usuário logado
     tipos_crediario_disponiveis = TipoCrediario.get_all_for_user(
         current_user.id)
 
     if request.method == 'POST':
         crediario_nome = request.form['crediario']
-        # Este será o nome do tipo (string)
         tipo_selecionado = request.form['tipo']
         final = request.form['final']
         limite = request.form['limite']
@@ -89,7 +82,6 @@ def edit_crediario(crediario_id):
             flash('Todos os campos são obrigatórios!', 'warning')
             return render_template('crediarios/edit.html', crediario=crediario, tipos_crediario=tipos_crediario_disponiveis)
 
-        # Validação para o campo 'final'
         if not final.isdigit() or len(final) != 4:
             flash('O campo "Final (Últimos dígitos do cartão/documento)" deve conter exatamente 4 dígitos numéricos.', 'danger')
             return render_template('crediarios/edit.html', crediario=crediario, tipos_crediario=tipos_crediario_disponiveis)
@@ -98,7 +90,6 @@ def edit_crediario(crediario_id):
             limite_float = float(limite)
             final_int = int(final)
 
-            # O campo 'tipo' no modelo Crediario ainda é uma string
             updated_crediario = Crediario.update(
                 crediario_id, crediario_nome, tipo_selecionado, final_int, limite_float, current_user.id
             )
@@ -123,7 +114,6 @@ def edit_crediario(crediario_id):
 @crediario_bp.route('/delete/<int:crediario_id>', methods=['POST'])
 @login_required
 def delete_crediario(crediario_id):
-    """Exclui um crediário."""
     crediario = Crediario.get_by_id(crediario_id, current_user.id)
     if not crediario:
         flash(

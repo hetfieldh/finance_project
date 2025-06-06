@@ -6,8 +6,6 @@ from functools import wraps
 
 user_bp = Blueprint('users', __name__)
 
-# --- Decorador para Rotas Apenas de Administrador ---
-
 
 def admin_required(f):
     @wraps(f)
@@ -19,24 +17,20 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# --- Rotas de Usuário ---
-
 
 @user_bp.route('/list')
 @login_required
 def list_users():
-    # Se o usuário logado for administrador, mostra todos os usuários
     if current_user.is_admin:
         users = User.get_all()
     else:
-        # Se não for administrador, mostra apenas o próprio usuário em uma lista
         users = [User.get_by_id(current_user.id)]
     return render_template('users/list.html', users=users)
 
 
 @user_bp.route('/add', methods=['GET', 'POST'])
 @login_required
-@admin_required  # Apenas administradores podem adicionar usuários
+@admin_required
 def add_user():
     if request.method == 'POST':
         login = request.form['login']
@@ -60,7 +54,6 @@ def add_user():
         except Exception as e:
             flash(f'Erro ao adicionar usuário: {e}', 'danger')
 
-    # CORRIGIDO: Alterado 'users/add_user.html' para 'users/add.html'
     return render_template('users/add.html')
 
 
@@ -72,8 +65,6 @@ def edit_user(user_id):
         flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('users.list_users'))
 
-    # Controle de acesso para edição:
-    # Admin pode editar qualquer um. Usuário comum só pode editar a si mesmo.
     if not current_user.is_admin and user.id != current_user.id:
         flash('Acesso negado. Você não tem permissão para editar este usuário.', 'danger')
         return redirect(url_for('users.list_users'))
@@ -83,9 +74,6 @@ def edit_user(user_id):
         password = request.form.get('password')
         name = request.form['name']
         email = request.form['email']
-        # Lógica para definir is_admin:
-        # Se o usuário logado for admin, ele pode alterar o is_admin do formulário.
-        # Caso contrário, o is_admin do usuário editado permanece inalterado.
         is_admin = 'is_admin' in request.form if current_user.is_admin else user.is_admin
 
         if not (login and name and email):
@@ -111,7 +99,6 @@ def edit_user(user_id):
 @user_bp.route('/delete/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
-    # **VERIFICAÇÃO DE SEGURANÇA: Impedir que o usuário logado se exclua**
     if user_id == current_user.id:
         flash('Você não pode excluir seu próprio usuário.', 'danger')
         return redirect(url_for('users.list_users'))
@@ -121,7 +108,6 @@ def delete_user(user_id):
         flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('users.list_users'))
 
-    # **VERIFICAÇÃO DE SEGURANÇA: Apenas administradores podem excluir outros usuários**
     if not current_user.is_admin:
         flash('Acesso negado. Você não tem permissão para excluir usuários.', 'danger')
         return redirect(url_for('users.list_users'))

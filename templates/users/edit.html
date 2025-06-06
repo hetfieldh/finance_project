@@ -1,10 +1,11 @@
 {# templates/users/edit.html #}
 {% extends "base.html" %}
 
-{% block title %}Finanças | Editar Usuário{% endblock %}
-{% block header_title %}Editar Usuário{% endblock %}
+{% block title %}Finanças | Usuários{% endblock %}
+
 
 {% block content %}
+<h2>Editar Usuário</h2>
 <form action="{{ url_for('users.edit_user', user_id=user.id) }}" method="post">
     <label for="login">Login:</label>
     <input type="text" id="login" name="login" value="{{ user.login }}" required {% if current_user.is_admin and user.id
@@ -22,12 +23,10 @@
     <input type="email" id="email" name="email" value="{{ user.email }}" required {% if current_user.is_admin and
         user.id !=current_user.id %}readonly{% endif %}><br><br>
 
-    {# Checkbox para Administrador - Editável apenas por administradores que não estão editando a própria conta #}
     {% if current_user.is_admin and user.id != current_user.id %}
     <input type="checkbox" id="is_admin" name="is_admin" {% if user.is_admin %}checked{% endif %}>
     <label for="is_admin">Administrador</label><br><br>
     {% else %}
-    {# Se não for admin, ou se for admin editando a própria conta, exibe o status mas não permite edição #}
     <input type="hidden" name="is_admin" value="{{ 'true' if user.is_admin else 'false' }}">
     <p>Status de Administrador: <strong>{{ 'Sim' if user.is_admin else 'Não' }}</strong></p>
     {% endif %}
