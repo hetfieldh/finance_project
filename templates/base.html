@@ -49,11 +49,19 @@
                     <a href="javascript:void(0)" class="dropbtn">Movimentos</a>
                     <div class="dropdown-content">
                         <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}">Crediários</a>
-                        <a href="{{ url_for('movimento.mov_extrato') }}">Extrato</a>
-                        <a href="{{ url_for('movimento.mov_lancamento') }}">Lançamentos</a>
+                        <a href="{{ url_for('movimento.mov_lancamento') }}">Bancários</a>
                         <a href="{{ url_for('movimento.mov_resumo_contas') }}">Resumo de Contas</a>
                     </div>
                 </li>
+
+                {# EXTRATOS #}
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Extratos</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('movimento.mov_extrato') }}">Bancários</a>
+                    </div>
+                </li>
+
                 <li><a href="{{ url_for('users.logout') }}">Sair ({{ current_user.login }})</a></li>
                 {% else %}
                 <li><a href="{{ url_for('users.login') }}">Login</a></li>
