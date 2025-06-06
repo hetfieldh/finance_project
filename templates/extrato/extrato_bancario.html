@@ -104,7 +104,6 @@
 <p>Por favor, selecione uma conta e um mês/ano para gerar o extrato.</p>
 {% endif %}
 
-{# Modal para confirmação de senha #}
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <h3>Confirme sua Senha</h3>
@@ -117,53 +116,4 @@
     </div>
 </div>
 
-{% endblock %}
-
-{% block scripts_extra %}
-<script>
-    let currentForm = null;
-
-    function showPasswordModal(form) {
-        currentForm = form;
-        document.getElementById('passwordModal').style.display = 'block';
-        document.getElementById('modalPasswordInput').value = '';
-        document.getElementById('modalPasswordInput').focus();
-        return false;
-    }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const passwordModal = document.getElementById('passwordModal');
-        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-        const cancelDeleteButton = document.getElementById('cancelDeleteButton');
-        const modalPasswordInput = document.getElementById('modalPasswordInput');
-
-        confirmDeleteButton.addEventListener('click', function () {
-            const password = modalPasswordInput.value;
-            if (password) {
-                const passwordInput = document.createElement('input');
-                passwordInput.type = 'hidden';
-                passwordInput.name = 'password';
-                passwordInput.value = password;
-                currentForm.appendChild(passwordInput);
-
-                passwordModal.style.display = 'none';
-                currentForm.submit();
-            } else {
-                console.error("Por favor, digite sua senha.");
-            }
-        });
-
-        cancelDeleteButton.addEventListener('click', function () {
-            passwordModal.style.display = 'none';
-            currentForm = null;
-        });
-
-        window.addEventListener('click', function (event) {
-            if (event.target == passwordModal) {
-                passwordModal.style.display = 'none';
-                currentForm = null;
-            }
-        });
-    });
-</script>
 {% endblock %}
