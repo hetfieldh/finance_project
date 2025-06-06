@@ -1,0 +1,65 @@
+{# templates/movimento_crediario/list.html #}
+{% extends 'base.html' %}
+
+{% block title %}Movimentos de Crediário{% endblock %}
+
+{% block header_title %}Movimentos de Crediário{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Lista de Movimentos de Crediário</h2>
+    <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}" class="btn btn-add">Adicionar Novo
+        Movimento</a>
+
+    {% if movimentos %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data Compra</th>
+                <th>Descrição</th>
+                <th>Grupo</th>
+                <th>Crediário</th>
+                <th>Valor Total</th>
+                <th># Parcelas</th>
+                <th>1ª Parcela</th>
+                <th>Última Parcela</th>
+                <th>Valor Parcela Mensal</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mov in movimentos %}
+            <tr>
+                <td>{{ mov.id }}</td>
+                <td>{{ mov.data_compra.strftime('%d/%m/%Y') }}</td>
+                <td>{{ mov.descricao }}</td>
+                <td>{{ mov.nome_grupo_crediario }}</td> {# Exibe o nome do grupo #}
+                <td>{{ mov.nome_crediario }}</td> {# Exibe o nome do crediário #}
+                <td>R$ {{ "%.2f"|format(mov.valor_total) }}</td>
+                <td>{{ mov.num_parcelas }}</td>
+                <td>{{ mov.primeira_parcela.strftime('%m/%Y') }}</td> {# Exibe apenas mês/ano #}
+                <td>{{ mov.ultima_parcela.strftime('%m/%Y') }}</td> {# Exibe apenas mês/ano #}
+                <td>R$ {{ "%.2f"|format(mov.valor_parcela_mensal) }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('movimento_crediario.edit_movimento_crediario', movimento_id=mov.id) }}"
+                        class="icon-button edit" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{{ url_for('movimento_crediario.delete_movimento_crediario', movimento_id=mov.id) }}"
+                        method="post" style="display:inline;">
+                        <button type="submit" class="icon-button delete" title="Excluir"
+                            onclick="return confirm('Tem certeza que deseja excluir o movimento de {{ mov.descricao }}?');">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhum movimento de crediário cadastrado ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}  

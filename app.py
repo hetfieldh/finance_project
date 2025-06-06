@@ -11,7 +11,8 @@ from routes.crediario_routes import crediario_bp
 from routes.movimento_routes import movimento_bp
 from routes.transacao_routes import transacao_bp
 from routes.tipo_crediario_routes import tipo_crediario_bp
-from routes.grupo_crediario_routes import grupo_crediario_bp # Importado corretamente
+from routes.grupo_crediario_routes import grupo_crediario_bp
+from routes.movimento_crediario_routes import movimento_crediario_bp
 
 # modelos
 from models.user_model import User
@@ -21,7 +22,8 @@ from models.crediario_model import Crediario
 from models.movimento_bancario_model import MovimentoBancario
 from models.transacao_model import Transacao
 from models.tipo_crediario_model import TipoCrediario
-from models.grupo_crediario_model import GrupoCrediario # Importado corretamente
+from models.grupo_crediario_model import GrupoCrediario
+from models.movimento_crediario_model import MovimentoCrediario
 
 # checar e atualizar constraints
 from database.db_manager import check_and_update_table_constraints
@@ -40,6 +42,8 @@ login_manager.login_message = "Faça login para acessar o sistema."
 login_manager.login_message_category = "info"
 
 # Callback para recarregar o objeto User do ID do usuário armazenado na sessão
+
+
 @login_manager.user_loader
 def load_user(user_id):
     # Flask-Login espera que esta função retorne um objeto User ou None se o ID não for válido.
@@ -55,7 +59,8 @@ app.register_blueprint(crediario_bp)
 app.register_blueprint(movimento_bp)
 app.register_blueprint(transacao_bp)
 app.register_blueprint(tipo_crediario_bp)
-app.register_blueprint(grupo_crediario_bp) # Registrado corretamente
+app.register_blueprint(grupo_crediario_bp)
+app.register_blueprint(movimento_crediario_bp)
 
 
 # 4. Rota Home Principal
@@ -83,19 +88,15 @@ def internal_server_error(e):
 
 if __name__ == '__main__':
     with app.app_context():
-        User.create_table()             # Tabela de usuários (pai de muitas)
-        ContaBancaria.create_table()    # Tabela de contas bancárias (depende de users)
-        ContasPagar.create_table()      # Tabela de contas a pagar
-        Crediario.create_table()        # Tabela de crediários
-        Transacao.create_table()        # Tabela de tipos de transação
-        MovimentoBancario.create_table()# Tabela de movimentos bancários
+        User.create_table()
+        ContaBancaria.create_table()
+        ContasPagar.create_table()
+        Crediario.create_table()
+        Transacao.create_table()
+        MovimentoBancario.create_table()
         TipoCrediario.create_table()
-        GrupoCrediario.create_table()   # Tabela de Grupo Crediário criada corretamente
-        # Chama a função para verificar e adicionar colunas ou constraints se necessário.
-        # Útil para atualizações de esquema sem apagar o banco de dados.
+        GrupoCrediario.create_table()
+        MovimentoCrediario.create_table()
         check_and_update_table_constraints()
 
-    # Quando o script é executado diretamente, o servidor de desenvolvimento do Flask é iniciado.
-    # debug=True ativa o modo de depuração, que inclui o recarregamento automático do servidor
-    # ao detectar mudanças no código e um depurador interativo.
     app.run(debug=True)
