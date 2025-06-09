@@ -1,10 +1,10 @@
 {# templates/index.html #}
 {% extends "base.html" %}
 
-{% block title %}Finanças Pessoais{% endblock %} {# Define o título da aba do navegador #}
-{% block header_title %}Finanças Pessoais WEB{% endblock %} {# Define o título no cabeçalho #}
+{% block title %}Finanças Pessoais{% endblock %}
+{% block header_title %}Finanças Pessoais WEB{% endblock %}
 
 {% block content %}
 <p>Projeto Finanças WEB utilizando Python, HTML, CSS, JavaScript e PostgreSQL.</p>
-
+<a href="{{ url_for('movimento.mov_resumo_contas') }}" class="button">Resumo Bancário</a>
 {% endblock %}

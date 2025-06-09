@@ -1,11 +1,12 @@
 {# templates/movimento/resumo_bancario.html #}
 {% extends "base.html" %}
 
-{% block title %}Finanças | {{ title }}{% endblock %}
-{% block header_title %}{{ title }}{% endblock %}
+{% block title %}Finanças | Resumo Contas Bancárias{% endblock %}
 
 {% block content %}
 <h2>Resumo das Contas Bancárias</h2>
+
+<a href="{{ url_for('index') }}" class="button cancel">Home</a>
 
 {% if contas %}
 <table>

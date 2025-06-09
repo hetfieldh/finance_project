@@ -1,14 +1,11 @@
 {# templates/movimento_crediario/list.html #}
 {% extends 'base.html' %}
 
-{% block title %}Movimentos de Crediário{% endblock %}
-
-{% block header_title %}Movimentos de Crediário{% endblock %}
+{% block title %}Finanças | Extrato Crediário{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2>Registrar Novo Lançamento em Crediários</h2>
-    <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}" class="button">Adicionar</a>
+    <h2>Extrato de Crediários</h2>
 
     {% if movimentos %}
     <table class="data-table">
@@ -61,4 +58,4 @@
     <p>Nenhum movimento de crediário cadastrado ainda.</p>
     {% endif %}
 </div>
-{% endblock %}  
+{% endblock %}
