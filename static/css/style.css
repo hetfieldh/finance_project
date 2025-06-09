@@ -235,6 +235,16 @@ form button[type="submit"]:hover,
     background-color: #5a6268;
 }
 
+/* Estilos específicos para botões de cancelamento */
+.button.home {
+    background-color: #008a1e;
+    color: white;
+}
+
+.button.home:hover {
+    background-color: #004203;
+}
+
 /* --- 6. Estilos de Tabela --- */
 
 /* Tabela geral */

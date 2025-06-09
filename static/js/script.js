@@ -1,87 +1,109 @@
 // static/js/script.js
 
-// Garante que o script só rode depois que o DOM estiver completamente carregado
-document.addEventListener('DOMContentLoaded', function() {
-    // Lógica para o menu dropdown (manter aqui se já existia)
+/**
+ * Função utilitária para obter a data de hoje formatada (YYYY-MM-DD).
+ * @returns {string} A data atual formatada.
+ */
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    let day = today.getDate();
+
+    // Adiciona zero à esquerda se for menor que 10
+    if (day < 10) day = '0' + day;
+    if (month < 10) month = '0' + month;
+
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Inicializa a funcionalidade do menu dropdown.
+ */
+function initializeDropdowns() {
     const dropdowns = document.querySelectorAll('.dropdown');
     dropdowns.forEach(dropdown => {
-        dropdown.querySelector('.dropbtn').addEventListener('click', function() {
-            this.nextElementSibling.classList.toggle('show');
-        });
-    });
-
-    // Fechar o dropdown se o usuário clicar fora (manter aqui se já existia)
-    window.addEventListener('click', function(event) {
-        if (!event.target.matches('.dropbtn')) {
-            const dropdowns = document.querySelectorAll('.dropdown-content');
-            dropdowns.forEach(openDropdown => {
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
+        const dropbtn = dropdown.querySelector('.dropbtn');
+        if (dropbtn) {
+            dropbtn.addEventListener('click', function () {
+                this.nextElementSibling.classList.toggle('show');
             });
         }
     });
 
-    // --- Lógica comum para formulários de Crediário (Add e Edit) ---
-    // (Manter a função initializeCrediarioForm aqui como foi feito anteriormente)
-    function initializeCrediarioForm(formId) {
-        const crediarioForm = document.getElementById(formId);
-        if (!crediarioForm) return;
+    // Fecha o dropdown se o usuário clicar fora
+    window.addEventListener('click', function (event) {
+        if (!event.target.matches('.dropbtn')) {
+            const openDropdowns = document.querySelectorAll('.dropdown-content.show');
+            openDropdowns.forEach(openDropdown => {
+                openDropdown.classList.remove('show');
+            });
+        }
+    });
+}
 
-        const finalInput = crediarioForm.querySelector('#final');
-        const modal = document.getElementById('addTipoModal');
-        const openModalBtn = crediarioForm.querySelector('#openAddTipoModal');
-        const closeButton = modal ? modal.querySelector('.close-button') : null;
-        const cancelAddTipoBtn = modal ? modal.querySelector('#cancelAddTipo') : null;
-        const addTipoForm = modal ? modal.querySelector('#addTipoForm') : null;
-        const tipoSelect = crediarioForm.querySelector('#tipo');
-        const modalMessages = modal ? modal.querySelector('#modal-messages') : null;
+/**
+ * Inicializa a lógica para formulários de Crediário (Adicionar e Editar).
+ * @param {string} formId O ID do formulário do crediário.
+ */
+function initializeCrediarioForm(formId) {
+    const crediarioForm = document.getElementById(formId);
+    if (!crediarioForm) return;
 
-        crediarioForm.addEventListener('submit', function (event) {
-            if (finalInput) {
-                let finalValue = finalInput.value;
-                finalInput.value = finalValue.padStart(4, '0');
+    const finalInput = crediarioForm.querySelector('#final');
+    const modal = document.getElementById('addTipoModal');
+    const openModalBtn = crediarioForm.querySelector('#openAddTipoModal');
+    const closeButton = modal ? modal.querySelector('.close-button') : null;
+    const cancelAddTipoBtn = modal ? modal.querySelector('#cancelAddTipo') : null;
+    const addTipoForm = modal ? modal.querySelector('#addTipoForm') : null;
+    const tipoSelect = crediarioForm.querySelector('#tipo');
+    const modalMessages = modal ? modal.querySelector('#modal-messages') : null;
+
+    // Lógica para o campo 'final'
+    if (finalInput) {
+        crediarioForm.addEventListener('submit', function () {
+            let finalValue = finalInput.value;
+            finalInput.value = finalValue.padStart(4, '0');
+        });
+
+        finalInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+        });
+    }
+
+    // Lógica do Modal de Adição de Tipo de Crediário
+    if (modal && openModalBtn && closeButton && cancelAddTipoBtn && addTipoForm && tipoSelect && modalMessages) {
+        openModalBtn.addEventListener('click', function () {
+            modal.style.display = 'block';
+            modalMessages.innerHTML = '';
+            const modalNomeTipo = modal.querySelector('#modal_nome_tipo');
+            if (modalNomeTipo) modalNomeTipo.value = '';
+        });
+
+        closeButton.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        cancelAddTipoBtn.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
             }
         });
 
-        if (finalInput) {
-            finalInput.addEventListener('input', function() {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
-            });
-        }
+        addTipoForm.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        if (modal && openModalBtn && closeButton && cancelAddTipoBtn && addTipoForm && tipoSelect && modalMessages) {
-            openModalBtn.onclick = function () {
-                modal.style.display = 'block';
-                modalMessages.innerHTML = '';
-                const modalNomeTipo = modal.querySelector('#modal_nome_tipo');
-                if (modalNomeTipo) modalNomeTipo.value = '';
-            };
+            const formData = new FormData(addTipoForm);
+            const nomeTipo = formData.get('nome_tipo');
 
-            closeButton.onclick = function () {
-                modal.style.display = 'none';
-            };
-
-            cancelAddTipoBtn.onclick = function () {
-                modal.style.display = 'none';
-            };
-
-            window.onclick = function (event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            };
-
-            addTipoForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const formData = new FormData(addTipoForm);
-                const nomeTipo = formData.get('nome_tipo');
-
-                fetch(addTipoForm.action, {
-                    method: 'POST',
-                    body: formData
-                })
+            fetch(addTipoForm.action, {
+                method: 'POST',
+                body: formData
+            })
                 .then(response => response.text())
                 .then(html => {
                     const tempDiv = document.createElement('div');
@@ -97,18 +119,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (html.includes('success')) {
                         console.log('Tipo de crediário adicionado com sucesso via AJAX.');
-                        fetch('/tipos_crediario/')
+                        // Rebusca a lista completa de tipos de crediário
+                        fetch('/tipos_crediario/') // Assumindo que esta rota retorna uma lista HTML com os tipos
                             .then(response => response.text())
                             .then(listHtml => {
                                 const parser = new DOMParser();
                                 const doc = parser.parseFromString(listHtml, 'text/html');
-                                const newTipos = doc.querySelectorAll('table tbody tr');
+                                const newTiposRows = doc.querySelectorAll('table tbody tr'); // Supondo que a tabela tenha tbody tr
 
+                                // Limpa todas as opções existentes no select, exceto a primeira ("Selecione um Tipo")
                                 while (tipoSelect.options.length > 1) {
                                     tipoSelect.remove(1);
                                 }
 
-                                newTipos.forEach(row => {
+                                // Adiciona as novas opções ao select
+                                newTiposRows.forEach(row => {
                                     const nome = row.querySelector('td:nth-child(2)') ? row.querySelector('td:nth-child(2)').textContent.trim() : '';
                                     if (nome) {
                                         const option = document.createElement('option');
@@ -118,8 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }
                                 });
 
-                                tipoSelect.value = nomeTipo;
-                                modal.style.display = 'none';
+                                tipoSelect.value = nomeTipo; // Seleciona o recém-adicionado
+                                modal.style.display = 'none'; // Fecha o modal
                                 setTimeout(() => { if (modalMessages) modalMessages.innerHTML = ''; }, 3000);
                             })
                             .catch(error => {
@@ -132,203 +157,186 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Erro ao enviar formulário do modal:', error);
                     if (modalMessages) modalMessages.innerHTML = '<li class="danger">Ocorreu um erro ao adicionar o tipo.</li>';
                 });
-            });
-        }
+        });
     }
+}
 
-    // Inicializa a lógica para o formulário de Adição de Crediário (se presente na página)
-    initializeCrediarioForm('crediarioForm');
-
-    // Inicializa a lógica para o formulário de Edição de Crediário (se presente na página)
-    initializeCrediarioForm('crediarioEditForm');
-
-
-    // --- Lógica do Modal de Senha para Confirmação de Exclusão (Extrato Bancário) ---
-    let currentDeleteForm = null;
+/**
+ * Lógica do Modal de Senha para Confirmação de Exclusão (usado em Extrato Bancário).
+ */
+function initializePasswordModal() {
+    let currentDeleteForm = null; // Variável para armazenar o formulário que acionou o modal
 
     const passwordModal = document.getElementById('passwordModal');
-    if (passwordModal) {
-        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-        const cancelDeleteButton = document.getElementById('cancelDeleteButton');
-        const modalPasswordInput = document.getElementById('modalPasswordInput');
+    if (!passwordModal) return;
 
-        confirmDeleteButton.addEventListener('click', function () {
-            const password = modalPasswordInput.value;
-            if (password && currentDeleteForm) {
-                const passwordInput = document.createElement('input');
-                passwordInput.type = 'hidden';
-                passwordInput.name = 'password';
-                passwordInput.value = password;
-                currentDeleteForm.appendChild(passwordInput);
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+    const modalPasswordInput = document.getElementById('modalPasswordInput');
 
-                passwordModal.style.display = 'none';
-                currentDeleteForm.submit();
-            } else {
-                console.error("Por favor, digite sua senha para confirmar a exclusão.");
-            }
-        });
+    confirmDeleteButton.addEventListener('click', function () {
+        const password = modalPasswordInput.value;
+        if (password && currentDeleteForm) {
+            const passwordInput = document.createElement('input');
+            passwordInput.type = 'hidden';
+            passwordInput.name = 'password';
+            passwordInput.value = password;
+            currentDeleteForm.appendChild(passwordInput);
 
-        cancelDeleteButton.addEventListener('click', function () {
+            passwordModal.style.display = 'none';
+            currentDeleteForm.submit();
+        } else {
+            console.error("Por favor, digite sua senha para confirmar a exclusão.");
+        }
+    });
+
+    cancelDeleteButton.addEventListener('click', function () {
+        passwordModal.style.display = 'none';
+        currentDeleteForm = null;
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === passwordModal) {
             passwordModal.style.display = 'none';
             currentDeleteForm = null;
-        });
+        }
+    });
 
-        window.addEventListener('click', function (event) {
-            if (event.target === passwordModal) {
-                passwordModal.style.display = 'none';
-                currentDeleteForm = null;
-            }
-        });
+    // Torna a função showPasswordModal global para ser chamada pelo 'onsubmit' no HTML
+    window.showPasswordModal = function (form) {
+        currentDeleteForm = form;
+        passwordModal.style.display = 'block';
+        modalPasswordInput.value = '';
+        modalPasswordInput.focus();
+        return false; // Previne a submissão padrão do formulário
+    };
+}
+
+/**
+ * Inicializa a lógica para o Formulário de Lançamento Bancário.
+ * @param {object} accountsData Dados das contas, passados do Jinja2 para o JS.
+ */
+function initializeLancamentoForm(accountsData) {
+    const lancamentoForm = document.querySelector('form[action*="/movimento/lancamento"]');
+    if (!lancamentoForm) return;
+
+    const dateInput = document.getElementById('data');
+    const valorInput = document.getElementById('valor');
+    const descricaoSelect = document.getElementById('descricao');
+    const transacoesOptions = Array.from(descricaoSelect.options).slice(1);
+
+    const isTransferCheckbox = document.getElementById('is_transfer');
+    const targetAccountGroup = document.getElementById('target_account_group');
+    const contaDestinoSelect = document.getElementById('conta_destino_id');
+    const contaOrigemSelect = document.getElementById('conta_id');
+
+    if (dateInput) {
+        dateInput.value = getTodayDate();
     }
 
-    // A função showPasswordModal precisa ser global para ser chamada pelo 'onsubmit'
-    window.showPasswordModal = function(form) {
-        currentDeleteForm = form;
-        document.getElementById('passwordModal').style.display = 'block';
-        document.getElementById('modalPasswordInput').value = '';
-        document.getElementById('modalPasswordInput').focus();
-        return false;
-    };
+    valorInput.addEventListener('input', function () {
+        const valor = parseFloat(this.value.replace(',', '.'));
 
-
-    // --- Lógica para o Formulário de Lançamento Bancário (movimento/lancamento.html) ---
-    function initializeLancamentoForm() {
-        const lancamentoForm = document.querySelector('form[action*="/movimento/lancamento"]');
-        if (!lancamentoForm) return; // Só executa se estiver na página de lançamento
-
-        const dateInput = document.getElementById('data');
-        const valorInput = document.getElementById('valor');
-        const descricaoSelect = document.getElementById('descricao');
-        // Pega as opções de transação, excluindo a primeira ("Selecione a Transação")
-        const transacoesOptions = Array.from(descricaoSelect.options).slice(1);
-
-        const isTransferCheckbox = document.getElementById('is_transfer');
-        const targetAccountGroup = document.getElementById('target_account_group');
-        const contaDestinoSelect = document.getElementById('conta_destino_id');
-        const contaOrigemSelect = document.getElementById('conta_id');
-
-        // Função para obter a data de hoje formatada
-        function getTodayDate() {
-            const today = new Date();
-            const year = today.getFullYear();
-            let month = today.getMonth() + 1;
-            let day = today.getDate();
-            if (day < 10) day = '0' + day;
-            if (month < 10) month = '0' + month;
-            return year + '-' + month + '-' + day;
+        if (isNaN(valor) || valor === 0) {
+            transacoesOptions.forEach(option => option.style.display = '');
+            descricaoSelect.value = '';
+            descricaoSelect.required = true;
+            return;
         }
 
-        // Define a data atual no campo de data
-        if (dateInput) {
-            dateInput.value = getTodayDate();
+        const tipoDesejado = valor > 0 ? 'Entrada' : 'Saída';
+
+        transacoesOptions.forEach(option => {
+            const tipoTransacao = option.dataset.tipo;
+            if (tipoTransacao === tipoDesejado) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+
+        if (descricaoSelect.selectedOptions[0] && descricaoSelect.selectedOptions[0].style.display === 'none') {
+            descricaoSelect.value = '';
         }
+        descricaoSelect.required = true;
+    });
 
-        // Event listener para filtrar tipos de transação baseados no valor
-        valorInput.addEventListener('input', function () {
-            // Converte para número, tratando vírgula como ponto
-            const valor = parseFloat(this.value.replace(',', '.'));
+    isTransferCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+            targetAccountGroup.style.display = 'block';
+            contaDestinoSelect.required = true;
+            descricaoSelect.required = false;
+            descricaoSelect.value = '';
 
-            if (isNaN(valor) || valor === 0) {
-                // Se o valor não é um número ou é zero, mostra todas as opções
-                transacoesOptions.forEach(option => option.style.display = '');
-                descricaoSelect.value = ''; // Limpa a seleção
-                descricaoSelect.required = true;
-                return;
+            valorInput.value = Math.abs(parseFloat(valorInput.value.replace(',', '.')) || 0);
+
+            const transferOption = transacoesOptions.find(opt =>
+                opt.value.toLowerCase().includes('transferencia') || opt.value.toLowerCase().includes('transferência')
+            );
+            if (transferOption) {
+                descricaoSelect.value = transferOption.value;
+            } else {
+                console.warn("Tipo de transação 'Transferência' não encontrado. Por favor, cadastre um.");
             }
 
-            const tipoDesejado = valor > 0 ? 'Entrada' : 'Saída';
+        } else {
+            targetAccountGroup.style.display = 'none';
+            contaDestinoSelect.required = false;
+            contaDestinoSelect.value = '';
+            descricaoSelect.required = true;
+        }
+        filterTargetAccounts();
+    });
 
-            // Filtra as opções visíveis
-            transacoesOptions.forEach(option => {
-                const tipoTransacao = option.dataset.tipo; // Pega o tipo de transação do data-attribute
-                if (tipoTransacao === tipoDesejado) {
-                    option.style.display = '';
-                } else {
-                    option.style.display = 'none';
+    contaOrigemSelect.addEventListener('change', filterTargetAccounts);
+
+    function filterTargetAccounts() {
+        const selectedOriginAccountId = contaOrigemSelect.value;
+        while (contaDestinoSelect.options.length > 1) {
+            contaDestinoSelect.remove(1);
+        }
+
+        if (isTransferCheckbox.checked && selectedOriginAccountId) {
+            // Usa accountsData passado como argumento
+            accountsData.forEach(conta => {
+                if (String(conta.id) !== String(selectedOriginAccountId)) {
+                    const option = document.createElement('option');
+                    option.value = conta.id;
+                    option.textContent = `${conta.nome_banco} - ${conta.tipo_conta} (Saldo: R$ ${conta.saldo_atual.toFixed(2)})`;
+                    contaDestinoSelect.appendChild(option);
                 }
             });
-
-            // Se a opção atualmente selecionada não é mais visível, reseta
-            if (descricaoSelect.selectedOptions[0] && descricaoSelect.selectedOptions[0].style.display === 'none') {
-                descricaoSelect.value = '';
-            }
-            descricaoSelect.required = true;
-        });
-
-        // Event listener para o checkbox de transferência
-        isTransferCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                targetAccountGroup.style.display = 'block';
-                contaDestinoSelect.required = true;
-                descricaoSelect.required = false; // Transação não é obrigatória para transferência
-                descricaoSelect.value = ''; // Limpa a seleção do tipo de transação
-
-                // Garante que o valor da transferência seja positivo
-                valorInput.value = Math.abs(parseFloat(valorInput.value.replace(',', '.')) || 0);
-
-                // Tenta pré-selecionar o tipo de transação "Transferência"
-                const transferOption = transacoesOptions.find(opt =>
-                    opt.value.toLowerCase().includes('transferencia') || opt.value.toLowerCase().includes('transferência')
-                );
-                if (transferOption) {
-                    descricaoSelect.value = transferOption.value;
-                } else {
-                    console.warn("Tipo de transação 'Transferência' não encontrado. Por favor, cadastre um.");
-                }
-
-            } else {
-                targetAccountGroup.style.display = 'none';
-                contaDestinoSelect.required = false;
-                contaDestinoSelect.value = ''; // Limpa a seleção da conta destino
-                descricaoSelect.required = true; // Transação volta a ser obrigatória
-            }
-            // Chama a função para filtrar as contas de destino (sempre que a transferência mudar)
-            filterTargetAccounts();
-        });
-
-        // Event listener para filtrar contas de destino quando a conta de origem muda
-        contaOrigemSelect.addEventListener('change', filterTargetAccounts);
-
-        // Função para filtrar as contas de destino para transferência
-        function filterTargetAccounts() {
-            const selectedOriginAccountId = contaOrigemSelect.value;
-            // Limpa todas as opções de destino, exceto a primeira ("Selecione a Conta Destino")
-            while (contaDestinoSelect.options.length > 1) {
-                contaDestinoSelect.remove(1);
-            }
-
-            // Se for transferência e uma conta de origem estiver selecionada
-            if (isTransferCheckbox.checked && selectedOriginAccountId) {
-                // Recupera os dados das contas diretamente do HTML (convertendo de JSON)
-                // É fundamental que 'contas' seja passado corretamente para o template como JSON
-                const allAccountsData = JSON.parse('{{ contas | tojson | safe }}');
-
-                allAccountsData.forEach(conta => {
-                    // Adiciona apenas as contas que não são a conta de origem
-                    if (String(conta.id) !== String(selectedOriginAccountId)) {
-                        const option = document.createElement('option');
-                        option.value = conta.id;
-                        option.textContent = `${conta.nome_banco} - ${conta.tipo_conta} (Saldo: R$ ${conta.saldo_atual.toFixed(2)})`;
-                        contaDestinoSelect.appendChild(option);
-                    }
-                });
-            }
-        }
-
-        // Dispara o evento 'input' no campo valor ao carregar a página
-        // para aplicar o filtro de tipo de transação se já houver um valor
-        if (valorInput.value) {
-            valorInput.dispatchEvent(new Event('input'));
-        }
-
-        // Dispara o evento 'change' no checkbox de transferência ao carregar a página
-        // para exibir/ocultar o campo de conta destino e filtrar
-        if (isTransferCheckbox.checked) {
-            filterTargetAccounts();
         }
     }
 
-    // Inicializa a lógica para o formulário de Lançamento Bancário (se presente na página)
-    initializeLancamentoForm();
+    if (valorInput.value) {
+        valorInput.dispatchEvent(new Event('input'));
+    }
 
+    if (isTransferCheckbox.checked) {
+        filterTargetAccounts();
+    }
+}
+
+// --- Ponto de Entrada Principal (Executado quando o DOM estiver carregado) ---
+document.addEventListener('DOMContentLoaded', function () {
+    initializeDropdowns();
+    initializeCrediarioForm('crediarioForm');
+    initializeCrediarioForm('crediarioEditForm');
+    initializePasswordModal();
+
+    // Para o formulário de lançamento, é preciso passar os dados das contas.
+    // Isso ainda requer que o Flask renderize esses dados no HTML de forma que o JS possa pegá-los.
+    // Exemplo: <script id="accounts-data" type="application/json">{{ contas | tojson | safe }}</script>
+    // E então no JS:
+    const accountsDataElement = document.getElementById('accounts-data');
+    let accountsData = [];
+    if (accountsDataElement) {
+        try {
+            accountsData = JSON.parse(accountsDataElement.textContent);
+        } catch (e) {
+            console.error('Erro ao parsear dados das contas:', e);
+        }
+    }
+    initializeLancamentoForm(accountsData);
 });

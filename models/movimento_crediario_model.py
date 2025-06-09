@@ -82,7 +82,7 @@ class MovimentoCrediario:
         WHERE
             mc.user_id = %s
         ORDER BY
-            mc.data_compra DESC;
+            mc.id DESC;
         """
         rows = execute_query(query, (user_id,), fetchall=True)
         if rows:
