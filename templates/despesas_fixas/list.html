@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Finanças | Extrato Despesas Fixas{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Extrato: Despesas Fixas</h2>
+
+    {% if despesas_fixas %}
+    <table>
+        <thead>
+            <tr>
+                <th>Despesa Fixa</th>
+                <th>Mês/Ano</th>
+                <th>Valor</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for despesa in despesas_fixas %}
+            <tr>
+                <td>{{ despesa.descricao }}</td>
+                <td>{{ despesa.mes_ano.strftime('%m/%Y') }}</td>
+                <td>R$ {{ "%.2f" % despesa.valor }}</td>
+                <td>
+                    <a href="{{ url_for('despesa_fixa.edit_despesa_fixa', despesa_id=despesa.id) }}"
+                        class="icon-button edit" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{{ url_for('despesa_fixa.delete_despesa_fixa', despesa_id=despesa.id) }}"
+                        method="post" style="display:inline;">
+                        <button type="submit" class="icon-button delete" title="Excluir"
+                            onclick="return confirm('Tem certeza que deseja excluir: ({{ despesa.descricao }})?');">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhuma despesa fixa cadastrada ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+{% endblock %}

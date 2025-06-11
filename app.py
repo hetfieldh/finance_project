@@ -15,6 +15,7 @@ from routes.tipo_crediario_routes import tipo_crediario_bp
 from routes.grupo_crediario_routes import grupo_crediario_bp
 from routes.movimento_crediario_routes import movimento_crediario_bp
 from routes.extrato_routes import extrato_bp
+from routes.despesa_fixa_routes import despesas_fixas_bp
 
 # modelos
 from models.user_model import User
@@ -26,6 +27,7 @@ from models.transacao_model import Transacao
 from models.tipo_crediario_model import TipoCrediario
 from models.grupo_crediario_model import GrupoCrediario
 from models.movimento_crediario_model import MovimentoCrediario
+from models.despesa_fixa_model import DespesaFixa
 
 # checar e atualizar constraints
 from database.db_manager import check_and_update_table_constraints
@@ -58,6 +60,7 @@ app.register_blueprint(tipo_crediario_bp)
 app.register_blueprint(grupo_crediario_bp)
 app.register_blueprint(movimento_crediario_bp)
 app.register_blueprint(extrato_bp)
+app.register_blueprint(despesas_fixas_bp)
 
 
 # 4. Rota Home Principal
@@ -91,6 +94,7 @@ if __name__ == '__main__':
         TipoCrediario.create_table()
         GrupoCrediario.create_table()
         MovimentoCrediario.create_table()
+        DespesaFixa.create_table()
         check_and_update_table_constraints()
 
     app.run(debug=True)

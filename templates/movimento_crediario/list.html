@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container">
-    <h2>Extrato de Crediários</h2>
+    <h2>Extrato: Crediários</h2>
 
     {% if movimentos %}
     <table class="data-table">
@@ -30,8 +30,8 @@
                 <td>{{ mov.id }}</td>
                 <td>{{ mov.data_compra.strftime('%d/%m/%Y') }}</td>
                 <td>{{ mov.descricao }}</td>
-                <td>{{ mov.nome_grupo_crediario }}</td> 
-                <td>{{ mov.nome_crediario }}</td> 
+                <td>{{ mov.nome_grupo_crediario }}</td>
+                <td>{{ mov.nome_crediario }}</td>
                 <td>R$ {{ "%.2f"|format(mov.valor_total) }}</td>
                 <td>{{ mov.num_parcelas }}</td>
                 <td>{{ mov.primeira_parcela.strftime('%m/%Y') }}</td>

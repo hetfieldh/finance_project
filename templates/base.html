@@ -35,12 +35,12 @@
                 <li class="dropdown">
                     <a href="javascript:void(0)" class="dropbtn">Cadastro</a>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('users.list_users') }}">Usuário</a>
-                        <a href="{{ url_for('crediarios.list_crediarios') }}">Crediário</a>
                         <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Conta Bancária</a>
-                        <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
+                        <a href="{{ url_for('crediarios.list_crediarios') }}">Crediário</a>
+                        <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Despesa e Receita</a>
                         <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}">Grupo de Crediário</a>
                         <a href="{{ url_for('transacoes.list_transacoes')}}">Transação</a>
+                        <a href="{{ url_for('users.list_users') }}">Usuário</a>
                     </div>
                 </li>
 
@@ -50,6 +50,7 @@
                     <div class="dropdown-content">
                         <a href="{{ url_for('movimento.mov_lancamento') }}">Bancário</a>
                         <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}">Crediário</a>
+                        <a href="{{ url_for('despesa_fixa.add_despesa_fixa') }}">Despesa Fixa</a>
                     </div>
                 </li>
 
@@ -59,6 +60,7 @@
                     <div class="dropdown-content">
                         <a href="{{ url_for('extrato.extrato_bancario') }}">Bancário</a>
                         <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}">Crediário</a>
+                        <a href="{{ url_for('despesa_fixa.list_despesas_fixas') }}">Despesas Fixas</a>
                     </div>
                 </li>
 

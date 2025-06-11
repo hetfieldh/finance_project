@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Finanças | Lançamento Despesa Fixa{% endblock %}
+
+{% block content %}
+<div class="container form-container">
+    <h2>Cadastrar Despesa Fixa</h2>
+    <form method="POST" action="{{ url_for('despesa_fixa.add_despesa_fixa') }}">
+        <div class="form-group">
+            <label for="conta_pagar_id">Despesa Fixa (Conta a Pagar):</label>
+            <select id="conta_pagar_id" name="conta_pagar_id" required>
+                <option value="">Selecione uma conta</option>
+                {% for conta in contas_pagar %}
+                <option value="{{ conta.id }}">{{ conta.conta }}</option>
+                {% else %}
+                <option value="" disabled>Nenhuma conta de despesa cadastrada.</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mes_ano">Mês/Ano:</label>
+            <input type="month" id="mes_ano" name="mes_ano" required value="{{ current_month_str }}">
+        </div>
+        <div class="form-group">
+            <label for="valor">Valor (R$):</label>
+            <input type="number" step="0.01" min="0.01" id="valor" name="valor" required placeholder="Ex: 1500.00">
+        </div>
+
+        <button type="submit" class="button">Salvar Despesa Fixa</button>
+    </form>
+</div>
+{% endblock %}
