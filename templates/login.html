@@ -1,9 +1,6 @@
 {# templates/login.html #}
 {% extends "base.html" %}
 
-{% block title %}Finanças | Login{% endblock %}
-{% block header_title %}Entrar no Sistema{% endblock %}
-
 {% block content %}
 <form action="{{ url_for('users.login') }}" method="post">
     <label for="login">Login:</label>

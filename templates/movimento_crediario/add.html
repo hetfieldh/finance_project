@@ -11,6 +11,7 @@
             <label for="data_compra">Data da Compra:</label>
             <input type="date" id="data_compra" name="data_compra" required value="{{ today_date_str }}">
         </div>
+        <br>
         <div class="form-group">
             <label for="descricao">Descrição:</label>
             <input type="text" id="descricao" name="descricao" required>
@@ -49,9 +50,8 @@
             <label for="primeira_parcela">Primeira Parcela (Mês/Ano):</label>
             <input type="month" id="primeira_parcela" name="primeira_parcela" required value="{{ current_month_str }}">
         </div>
-
+        <br>
         <button type="submit" class="btn btn-primary">Salvar</button>
-        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}" class="button cancel">Cancelar</a>
     </form>
 </div>
 {% endblock %}

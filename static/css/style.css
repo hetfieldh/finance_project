@@ -63,7 +63,7 @@ footer {
 /* Estilos para o logotipo */
 .logo-link {
     position: absolute;
-    top: 40px;
+    top: 27px;
     left: 10px;
     transform: translateY(-50%);
     z-index: 100;
@@ -72,7 +72,7 @@ footer {
 }
 
 .header-logo {
-    height: 75px;
+    height: 45px;
     width: auto;
     max-width: 100px;
 }

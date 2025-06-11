@@ -1,5 +1,8 @@
+{# templates/base.html #}
 <!DOCTYPE html>
 <html lang="pt-br">
+
+<title>{% block title %}{% endblock %}</title>
 
 <head>
     <meta charset="UTF-8">
@@ -14,7 +17,6 @@
 
     <link rel="icon" href="{{ url_for('static', filename='images/icone.png') }}" type="image/png">
 
-    {% block head_extra %}{% endblock %}
 </head>
 
 <body>
@@ -23,7 +25,7 @@
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logotipo da Empresa"
                 class="header-logo">
         </a>
-        <h1>{% block header_title %}Finanças Pessoais WEB{% endblock %}</h1>
+
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
@@ -31,32 +33,32 @@
 
                 {# CADASTROS #}
                 <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Cadastros</a>
+                    <a href="javascript:void(0)" class="dropbtn">Cadastro</a>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('users.list_users') }}">Usuários</a>
-                        <a href="{{ url_for('crediarios.list_crediarios') }}">Crediários</a>
-                        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Contas Bancárias</a>
+                        <a href="{{ url_for('users.list_users') }}">Usuário</a>
+                        <a href="{{ url_for('crediarios.list_crediarios') }}">Crediário</a>
+                        <a href="{{ url_for('contas_bancarias.list_contas_bancarias') }}">Conta Bancária</a>
                         <a href="{{ url_for('contas_pagar.list_contas_pagar') }}">Contas a Pagar</a>
-                        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}">Grupos de Crediário</a>
-                        <a href="{{ url_for('transacoes.list_transacoes')}}">Transações</a>
+                        <a href="{{ url_for('grupo_crediario.list_grupo_crediario') }}">Grupo de Crediário</a>
+                        <a href="{{ url_for('transacoes.list_transacoes')}}">Transação</a>
                     </div>
                 </li>
 
                 {# MOVIMENTOS #}
                 <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Movimentos</a>
+                    <a href="javascript:void(0)" class="dropbtn">Lançamento</a>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('movimento.mov_lancamento') }}">Bancários</a>
-                        <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}">Crediários</a>
+                        <a href="{{ url_for('movimento.mov_lancamento') }}">Bancário</a>
+                        <a href="{{ url_for('movimento_crediario.add_movimento_crediario') }}">Crediário</a>
                     </div>
                 </li>
 
                 {# EXTRATOS #}
                 <li class="dropdown">
-                    <a href="javascript:void(0)" class="dropbtn">Extratos</a>
+                    <a href="javascript:void(0)" class="dropbtn">Extrato</a>
                     <div class="dropdown-content">
-                        <a href="{{ url_for('extrato.extrato_bancario') }}">Bancários</a>
-                        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}">Crediários</a>
+                        <a href="{{ url_for('extrato.extrato_bancario') }}">Bancário</a>
+                        <a href="{{ url_for('movimento_crediario.list_movimentos_crediario') }}">Crediário</a>
                     </div>
                 </li>
 

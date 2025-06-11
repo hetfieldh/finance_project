@@ -69,7 +69,7 @@ def add_movimento_crediario():
                 valor_total, num_parcelas, primeira_parcela, current_user.id
             )
             flash('Movimento de Crediário adicionado com sucesso!', 'success')
-            return redirect(url_for('movimento_crediario.list_movimentos_crediario'))
+            return redirect(url_for('movimento_crediario.add_movimento_crediario'))
         except ValueError as e:
             flash(f'Erro de validação: {e}', 'danger')
             return render_template(
